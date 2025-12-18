@@ -5,29 +5,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anas Alhaj — Systems Architect</title>
+    <meta name="description" content="High-performance Graphics Engineering Portfolio. WebGL, Physics, and Interactive Systems.">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         :root {
             --bg: #050505;
             --text-main: #ffffff;
             --text-dim: #666666;
-            --accent: #444444;
             --line: rgba(255, 255, 255, 0.08);
             --highlight: #ffffff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; /* المؤشر الدقيق */ }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
         
         body {
             background-color: var(--bg); color: var(--text-main);
             font-family: 'Archivo', sans-serif; overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            /* Performance: Hardware Acceleration for smooth scrolling */
+            will-change: scroll-position;
         }
 
-        /* === The Background Blueprint Grid === */
+        /* Font Optimization */
+        body, h1, h2, span, a, div { font-display: swap; }
+
+        /* The Grid Background (CSS Only = Zero Load Time) */
         .grid-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: 
@@ -35,22 +45,22 @@
                 linear-gradient(90deg, var(--line) 1px, transparent 1px);
             background-size: 40px 40px;
             z-index: -2; opacity: 0.5;
+            /* Performance: GPU Layer Promotion */
+            transform: translateZ(0);
         }
         
-        /* 3D Canvas Layer */
         #webgl {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; opacity: 0.8; mix-blend-mode: screen; pointer-events: none;
         }
 
-        /* === UI Overlay (Technical Dashboard) === */
+        /* UI Styles (Minimal Layout Shift) */
         .ui-corner { position: fixed; font-family: 'Space Mono'; font-size: 0.7rem; color: var(--text-dim); z-index: 10; }
         .top-left { top: 20px; left: 20px; }
         .top-right { top: 20px; right: 20px; text-align: right; }
         .btm-left { bottom: 20px; left: 20px; }
         .btm-right { bottom: 20px; right: 20px; text-align: right; }
 
-        /* === Navigation === */
         nav {
             position: fixed; top: 50%; right: 40px; transform: translateY(-50%);
             display: flex; flex-direction: column; gap: 20px; z-index: 50;
@@ -63,41 +73,33 @@
         }
         nav a:hover, nav a.active { color: var(--text-main); letter-spacing: 2px; }
 
-        /* === Main Content === */
-        main {
-            max-width: 1400px; margin: 0 auto; padding: 0 5%;
-        }
+        main { max-width: 1400px; margin: 0 auto; padding: 0 5%; }
+        header { height: 100vh; display: flex; flex-direction: column; justify-content: center; }
 
-        header {
-            height: 100vh; display: flex; flex-direction: column; justify-content: center;
-        }
-
-        .code-tag {
-            font-family: 'Space Mono'; color: var(--text-dim); font-size: 0.9rem;
-            margin-bottom: 20px; display: block;
-        }
-        .code-tag::before { content: '< '; color: var(--highlight); }
-        .code-tag::after { content: ' />'; color: var(--highlight); }
-
+        /* Typography - using EM/REM for scale */
         h1 {
             font-size: clamp(4rem, 10vw, 9rem); font-weight: 800; text-transform: uppercase;
             line-height: 0.9; margin-left: -5px; letter-spacing: -0.02em;
+            /* Performance: Reduce paint complexity */
+            text-rendering: optimizeLegibility;
         }
+        
+        .code-tag { font-family: 'Space Mono'; color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px; display: block; }
+        .code-tag::before { content: '< '; color: var(--highlight); }
+        .code-tag::after { content: ' />'; color: var(--highlight); }
         
         .role-desc {
             margin-top: 40px; border-top: 1px solid var(--line); padding-top: 20px;
             display: flex; gap: 40px; font-family: 'Space Mono'; font-size: 0.85rem; color: var(--text-dim);
         }
-        .role-desc span { display: block; color: var(--text-main); margin-bottom: 5px; }
 
-        /* === Project Section (Architectural Layout) === */
         #projects { padding-top: 100px; padding-bottom: 100px; }
         
         .project-row {
             border-top: 1px solid var(--line);
             display: grid; grid-template-columns: 0.5fr 1.5fr 1fr 0.5fr;
             padding: 40px 0; align-items: baseline;
-            text-decoration: none; color: inherit; transition: background 0.3s;
+            text-decoration: none; color: inherit; transition: background 0.2s ease-out; /* optimized transition */
         }
         .project-row:hover { background: rgba(255,255,255,0.02); }
         .project-row:last-child { border-bottom: 1px solid var(--line); }
@@ -105,18 +107,14 @@
         .p-id { font-family: 'Space Mono'; color: var(--text-dim); }
         .p-title { font-size: 2.5rem; font-weight: 600; line-height: 1; }
         .p-desc { font-family: 'Space Mono'; font-size: 0.85rem; color: var(--text-dim); max-width: 300px; }
-        .p-tech { font-family: 'Space Mono'; font-size: 0.75rem; text-align: right; border: 1px solid var(--line); padding: 5px 10px; display: inline-block; }
+        .p-tech { font-family: 'Space Mono'; font-size: 0.75rem; text-align: right; border: 1px solid var(--line); padding: 5px 10px; }
 
         @media (max-width: 900px) {
             .project-row { grid-template-columns: 1fr; gap: 20px; }
             .p-id, .p-tech { display: none; }
         }
 
-        footer { 
-            padding: 50px 0; border-top: 1px solid var(--line); 
-            font-family: 'Space Mono'; font-size: 0.8rem; color: var(--text-dim);
-            text-align: center;
-        }
+        footer { padding: 50px 0; border-top: 1px solid var(--line); font-family: 'Space Mono'; font-size: 0.8rem; color: var(--text-dim); text-align: center; }
     </style>
 </head>
 <body>
@@ -124,9 +122,9 @@
     <div class="grid-bg"></div>
     <canvas id="webgl"></canvas>
 
-    <div class="ui-corner top-left">SYS.STATUS: ONLINE</div>
+    <div class="ui-corner top-left">SYS.STATUS: OPTIMIZED</div>
     <div class="ui-corner top-right">LOC: AMMAN, JO</div>
-    <div class="ui-corner btm-left">FPS: <span id="fps">60</span></div>
+    <div class="ui-corner btm-left">FPS: <span id="fps">--</span></div>
     <div class="ui-corner btm-right">SCROLL FOR DATA</div>
 
     <nav>
@@ -139,149 +137,134 @@
             <span class="code-tag">graphics_engineer</span>
             <h1>ANAS<br>ALHAJ.</h1>
             <div class="role-desc">
-                <div>
-                    <span>Specialization</span>
-                    WebGL & Physics
-                </div>
-                <div>
-                    <span>Stack</span>
-                    Three.js / GLSL
-                </div>
-                <div>
-                    <span>Status</span>
-                    Available
-                </div>
+                <div><span>Specialization</span>WebGL & Physics</div>
+                <div><span>Stack</span>Three.js / GLSL</div>
+                <div><span>Status</span>Available</div>
             </div>
         </header>
 
         <section id="projects">
             <span class="code-tag">selected_works</span>
-            
             <a href="canvas/index.html" class="project-row">
-                <span class="p-id">001</span>
-                <div class="p-title">Chaos Engine</div>
-                <div class="p-desc">CPU-based particle system with custom gather/scatter algorithms.</div>
-                <div class="p-tech">VANILLA JS</div>
+                <span class="p-id">001</span><div class="p-title">Chaos Engine</div>
+                <div class="p-desc">CPU-based particle system with custom gather/scatter algorithms.</div><div class="p-tech">VANILLA JS</div>
             </a>
-
             <a href="threejs/index.html" class="project-row">
-                <span class="p-id">002</span>
-                <div class="p-title">Spatial Web</div>
-                <div class="p-desc">Immersive 3D architecture featuring PBR materials and lighting.</div>
-                <div class="p-tech">THREE.JS</div>
+                <span class="p-id">002</span><div class="p-title">Spatial Web</div>
+                <div class="p-desc">Immersive 3D architecture featuring PBR materials and lighting.</div><div class="p-tech">THREE.JS</div>
             </a>
-
             <a href="matterjs/index.html" class="project-row">
-                <span class="p-id">003</span>
-                <div class="p-title">Dynamics</div>
-                <div class="p-desc">Rigid body physics playground with collision and restitution.</div>
-                <div class="p-tech">MATTER.JS</div>
+                <span class="p-id">003</span><div class="p-title">Dynamics</div>
+                <div class="p-desc">Rigid body physics playground with collision and restitution.</div><div class="p-tech">MATTER.JS</div>
             </a>
-
             <a href="pixijs/index.html" class="project-row">
-                <span class="p-id">004</span>
-                <div class="p-title">Benchmark</div>
-                <div class="p-desc">High-throughput rendering test. 5000+ entities at 60fps.</div>
-                <div class="p-tech">PIXI.JS</div>
+                <span class="p-id">004</span><div class="p-title">Benchmark</div>
+                <div class="p-desc">High-throughput rendering test. 5000+ entities at 60fps.</div><div class="p-tech">PIXI.JS</div>
             </a>
-
             <a href="webgl/index.html" class="project-row">
-                <span class="p-id">005</span>
-                <div class="p-title">Shader Lab</div>
-                <div class="p-desc">Native GLSL programming. Mathematical visual generation.</div>
-                <div class="p-tech">GLSL</div>
+                <span class="p-id">005</span><div class="p-title">Shader Lab</div>
+                <div class="p-desc">Native GLSL programming. Mathematical visual generation.</div><div class="p-tech">GLSL</div>
             </a>
-
         </section>
 
-        <footer>
-            ENGINEERED BY ANAS ALHAJ © 2025
-        </footer>
+        <footer>ENGINEERED BY ANAS ALHAJ © 2025</footer>
     </main>
 
     <script>
-        // === FPS Counter Simulation ===
-        setInterval(() => {
-            document.getElementById('fps').innerText = Math.floor(58 + Math.random() * 3);
-        }, 500);
-
-        // === Three.js Architectural Abstract ===
-        const scene = new THREE.Scene();
-        // Corrected f-string usage
-        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl'), alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-        // Create a complex geometric structure (The "Core")
-        const geometry = new THREE.IcosahedronGeometry(10, 0);
-        
-        // Wireframe Material
-        const material = new THREE.MeshBasicMaterial({ 
-            color: 0xffffff, 
-            wireframe: true, 
-            transparent: true, 
-            opacity: 0.1 
-        });
-        
-        const core = new THREE.Mesh(geometry, material);
-        scene.add(core);
-
-        // Inner solid core
-        const innerGeo = new THREE.IcosahedronGeometry(6, 1);
-        const innerMat = new THREE.MeshBasicMaterial({ color: 0x222222, wireframe: true, transparent:true, opacity: 0.3 });
-        const innerCore = new THREE.Mesh(innerGeo, innerMat);
-        scene.add(innerCore);
-
-        // Orbital Rings
-        const ringGeo1 = new THREE.TorusGeometry(18, 0.05, 16, 100);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.2 });
-        const ring1 = new THREE.Mesh(ringGeo1, ringMat);
-        ring1.rotation.x = Math.PI / 2;
-        scene.add(ring1);
-
-        const ringGeo2 = new THREE.TorusGeometry(25, 0.05, 16, 100);
-        const ring2 = new THREE.Mesh(ringGeo2, ringMat);
-        ring2.rotation.y = Math.PI / 3;
-        scene.add(ring2);
-
-        camera.position.z = 35;
-
-        // Interaction
-        let mouseX = 0; let mouseY = 0;
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        // 4. Performance: Wait for Three.js to load (Defer logic)
+        window.addEventListener('load', () => {
+            initThreeJS();
         });
 
-        function animate() {
-            requestAnimationFrame(animate);
+        function initThreeJS() {
+            if (typeof THREE === 'undefined') return;
 
-            // Tech rotation
-            core.rotation.y += 0.002;
-            core.rotation.z += 0.001;
+            const scene = new THREE.Scene();
+            const canvas = document.getElementById('webgl');
+            // 5. Performance: Context Attributes Optimization
+            const renderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, 
+                alpha: true, 
+                antialias: false, // OFF for better performance on high-DPI
+                powerPreference: "high-performance"
+            });
             
-            innerCore.rotation.y -= 0.004;
-            innerCore.rotation.x -= 0.002;
-
-            ring1.rotation.x += 0.001;
-            ring1.rotation.y += 0.001;
-            
-            ring2.rotation.z -= 0.001;
-
-            // Parallax
-            camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
-            camera.lookAt(0, 0, 0);
-
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
+            // 6. Performance: Limit Pixel Ratio (Saves battery on phones)
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+            // Optimized Geometry (Low Poly Count)
+            const geometry = new THREE.IcosahedronGeometry(10, 0);
+            const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.1 });
+            const core = new THREE.Mesh(geometry, material);
+            scene.add(core);
+
+            const innerGeo = new THREE.IcosahedronGeometry(6, 1);
+            const innerMat = new THREE.MeshBasicMaterial({ color: 0x222222, wireframe: true, transparent:true, opacity: 0.3 });
+            const innerCore = new THREE.Mesh(innerGeo, innerMat);
+            scene.add(innerCore);
+
+            const ringGeo = new THREE.TorusGeometry(18, 0.05, 12, 50); // Reduced segments
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.2 });
+            const ring1 = new THREE.Mesh(ringGeo, ringMat);
+            ring1.rotation.x = Math.PI / 2;
+            scene.add(ring1);
+
+            const ring2 = new THREE.Mesh(ringGeo, ringMat); // Reuse Geometry
+            ring2.scale.set(1.4, 1.4, 1.4);
+            ring2.rotation.y = Math.PI / 3;
+            scene.add(ring2);
+
+            camera.position.z = 35;
+
+            let mouseX = 0; let mouseY = 0;
+            // 7. Performance: Throttled Event Listener (Passive)
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+                mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+            }, { passive: true });
+
+            const fpsElem = document.getElementById('fps');
+            let frameCount = 0;
+            let lastTime = performance.now();
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Rotations
+                core.rotation.y += 0.002;
+                core.rotation.z += 0.001;
+                innerCore.rotation.y -= 0.004;
+                ring1.rotation.x += 0.001;
+                ring2.rotation.z -= 0.001;
+
+                // Simple Parallax
+                camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
+                camera.lookAt(0, 0, 0);
+
+                renderer.render(scene, camera);
+
+                // Accurate FPS Counter
+                frameCount++;
+                const currentTime = performance.now();
+                if (currentTime - lastTime >= 1000) {
+                    fpsElem.innerText = frameCount;
+                    frameCount = 0;
+                    lastTime = currentTime;
+                }
+            }
+            animate();
+
+            // Passive Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }, { passive: true });
+        }
     </script>
 </body>
 </html>
