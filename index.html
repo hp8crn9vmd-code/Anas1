@@ -4,280 +4,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anas Alhaj | Elite Graphics Engineer</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
+    <title>Anas Alhaj | Design Engineer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@200;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #00f260;
-            --bg: #030303;
-            --text: #ffffff;
-            --card: rgba(255,255,255,0.03);
-            --border: rgba(255,255,255,0.08);
+            --bg: #080808;
+            --card-bg: #111111;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --accent: #d4ff00; /* Neon Lime for high contrast */
+            --border: rgba(255, 255, 255, 0.08);
         }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; /* Hide default cursor */ }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            background: var(--bg); color: var(--text);
-            font-family: 'Space Grotesk', sans-serif;
-            overflow-x: hidden;
+            background-color: var(--bg); color: var(--text-main);
+            font-family: 'Inter', sans-serif; overflow-x: hidden;
         }
 
-        /* === LOADER === */
-        .loader {
+        /* === Texture Overlay (Noise) === */
+        .noise {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000;
-            display: flex; justify-content: center; align-items: center;
-            flex-direction: column; transition: opacity 1s ease;
+            background: url("https://grainy-gradients.vercel.app/noise.svg");
+            opacity: 0.05; pointer-events: none; z-index: 9999;
         }
-        .counter { font-family: 'Syncopate'; font-size: 4rem; font-weight: bold; color: var(--primary); }
-        .bar { width: 200px; height: 2px; background: #222; margin-top: 20px; overflow: hidden; }
-        .progress { width: 0%; height: 100%; background: var(--primary); transition: width 0.1s; }
 
-        /* === CUSTOM CURSOR === */
-        .cursor {
-            position: fixed; top: 0; left: 0; width: 12px; height: 12px;
-            background: var(--primary); border-radius: 50%;
-            transform: translate(-50%, -50%); pointer-events: none; z-index: 9999;
-            transition: width 0.3s, height 0.3s, background 0.3s;
-            mix-blend-mode: difference;
-        }
-        .cursor-follower {
-            position: fixed; top: 0; left: 0; width: 40px; height: 40px;
-            border: 1px solid rgba(255,255,255,0.3); border-radius: 50%;
-            transform: translate(-50%, -50%); pointer-events: none; z-index: 9998;
-            transition: transform 0.15s ease-out;
-        }
-        
-        /* Interactive States */
-        body.hovering .cursor { width: 60px; height: 60px; opacity: 0.5; background: transparent; border: 1px solid var(--primary); }
-        body.hovering .cursor-follower { transform: translate(-50%, -50%) scale(0); }
-
-        /* === BACKGROUND === */
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4; }
-
-        /* === HERO SECTION === */
+        /* === Hero Section === */
         header {
-            height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
-            padding: 0 20px; opacity: 0; transform: translateY(20px);
-            transition: 1s ease 0.5s;
-        }
-        header.visible { opacity: 1; transform: translateY(0); }
-
-        .role { 
-            font-size: 0.9rem; letter-spacing: 5px; text-transform: uppercase; 
-            color: #888; margin-bottom: 20px; 
+            padding: 120px 5% 60px; max-width: 1400px; margin: 0 auto;
         }
         
         h1 {
-            font-family: 'Syncopate', sans-serif; font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 700; text-transform: uppercase; line-height: 1;
-            position: relative; color: white;
+            font-family: 'Manrope', sans-serif; font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
+            margin-bottom: 20px;
         }
         
-        /* Glitch Effect */
-        h1::before, h1::after {
-            content: "ANAS ALHAJ"; position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8;
-        }
-        h1::before { color: #0ff; z-index: -1; animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite; }
-        h1::after { color: #f0f; z-index: -2; animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) reverse both infinite; }
-        
-        @keyframes glitch {
-            0% { transform: translate(0) }
-            20% { transform: translate(-2px, 2px) }
-            40% { transform: translate(-2px, -2px) }
-            60% { transform: translate(2px, 2px) }
-            80% { transform: translate(2px, -2px) }
-            100% { transform: translate(0) }
+        .bio {
+            font-size: 1.2rem; color: var(--text-muted); max-width: 600px;
+            line-height: 1.6; border-left: 2px solid var(--accent); padding-left: 20px;
         }
 
-        /* === GRID === */
-        .grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px; max-width: 1400px; margin: 0 auto; padding: 100px 40px;
+        /* === The Bento Grid === */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 أعمدة */
+            grid-template-rows: repeat(2, 350px); /* صفين بارتفاع ثابت */
+            gap: 20px;
+            padding: 0 5% 100px; max-width: 1400px; margin: 0 auto;
         }
-        
+
+        /* Card Styles with Spotlight Effect */
         .card {
-            background: var(--card); border: 1px solid var(--border);
-            padding: 50px; border-radius: 0; position: relative; overflow: hidden;
-            text-decoration: none; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            display: flex; flex-direction: column; justify-content: space-between; height: 350px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            position: relative; overflow: hidden;
+            text-decoration: none; color: white;
+            transition: transform 0.3s ease;
+            display: flex; flex-direction: column; padding: 30px;
+            group;
+        }
+
+        /* Spotlight Element */
+        .card::before {
+            content: "";
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 24px; padding: 2px; 
+            background: radial-gradient(
+                800px circle at var(--mouse-x) var(--mouse-y), 
+                rgba(255, 255, 255, 0.4), transparent 40%
+            ); 
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude;
+            opacity: 0; transition: opacity 0.5s; pointer-events: none;
         }
         
-        .card:hover { border-color: var(--primary); transform: translateY(-10px); background: rgba(255,255,255,0.05); }
-        
-        .card h2 { font-family: 'Syncopate'; font-size: 1.5rem; color: #fff; margin-bottom: 10px; }
-        .card p { color: #888; font-size: 1rem; line-height: 1.6; max-width: 90%; }
-        
-        .number { position: absolute; top: 20px; right: 20px; font-family: 'Syncopate'; font-size: 3rem; opacity: 0.1; font-weight: bold; }
-        .link-text { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--primary); margin-top: auto; opacity: 0; transform: translateX(-20px); transition: 0.3s; }
-        
-        .card:hover .link-text { opacity: 1; transform: translateX(0); }
+        .card:hover::before { opacity: 1; }
+        .card:hover { transform: scale(0.99); }
 
-        footer { text-align: center; padding: 50px; color: #444; font-size: 0.8rem; border-top: 1px solid var(--border); }
+        /* Card Content layout */
+        .card-icon {
+            font-size: 2rem; margin-bottom: auto; color: var(--accent);
+            background: rgba(255, 255, 255, 0.05); width: 60px; height: 60px;
+            display: flex; align-items: center; justify-content: center; border-radius: 12px;
+        }
+        
+        .card h2 { font-family: 'Manrope'; font-size: 1.8rem; margin-bottom: 10px; }
+        .card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+        
+        .arrow-btn {
+            margin-top: 20px; font-size: 0.9rem; font-weight: 600; 
+            text-transform: uppercase; letter-spacing: 1px;
+            display: flex; align-items: center; gap: 10px; opacity: 0.7; transition: 0.3s;
+        }
+        .card:hover .arrow-btn { opacity: 1; color: var(--accent); gap: 15px; }
+
+        /* === Grid Spans (الاحترافية تكمن هنا) === */
+        
+        /* البطاقة الأولى عريضة جداً */
+        .span-2 { grid-column: span 2; }
+        
+        /* البطاقة الطويلة */
+        .row-2 { grid-row: span 2; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .bento-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
+            .span-2 { grid-column: span 1; }
+        }
+        @media (max-width: 600px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 3rem; }
+        }
+
     </style>
 </head>
 <body>
+    <div class="noise"></div>
 
-    <div class="loader">
-        <div class="counter">0%</div>
-        <div class="bar"><div class="progress"></div></div>
-    </div>
-
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
-
-    <canvas id="bg-canvas"></canvas>
-
-    <header id="header">
-        <div class="role">Graphics Engineer</div>
-        <h1>Anas Alhaj</h1>
-        <p style="margin-top: 30px; color: #666; max-width: 400px;">Merging Art, Mathematics, and Code.</p>
+    <header>
+        <h1>ENGINEERING<br><span style="color:var(--accent)">INTERACTION.</span></h1>
+        <div class="bio">
+            Anas Alhaj. A multidisciplinary graphics engineer specializing in WebGL, high-performance rendering, and interactive physics simulations.
+        </div>
     </header>
 
-    <div class="grid">
-        <a href="canvas/index.html" class="card" onmouseenter="hover(true)" onmouseleave="hover(false)">
-            <span class="number">01</span>
-            <div>
-                <h2>Chaos Engine</h2>
-                <p>Custom particle physics logic. CPU-based gather/scatter algorithms.</p>
-            </div>
-            <span class="link-text">Explore Case Study -></span>
+    <div class="bento-grid" id="cards">
+        
+        <a href="canvas/index.html" class="card span-2">
+            <div class="card-icon">⚡</div>
+            <div style="height: 100px;"></div> <h2>Canvas Chaos Engine</h2>
+            <p>A proprietary particle physics system built from scratch. CPU-based gather/scatter algorithms interacting with user input in real-time.</p>
+            <div class="arrow-btn">Explore Engine <span>→</span></div>
         </a>
 
-        <a href="threejs/index.html" class="card" onmouseenter="hover(true)" onmouseleave="hover(false)">
-            <span class="number">02</span>
-            <div>
-                <h2>3D Architecture</h2>
-                <p>Three.js environment with PBR materials and dynamic lighting.</p>
-            </div>
-            <span class="link-text">Enter 3D Space -></span>
+        <a href="threejs/index.html" class="card">
+            <div class="card-icon">🧊</div>
+            <h2>3D Space</h2>
+            <p>Immersive WebGL environments with PBR materials and dynamic lighting.</p>
+            <div class="arrow-btn">View 3D <span>→</span></div>
         </a>
 
-        <a href="matterjs/index.html" class="card" onmouseenter="hover(true)" onmouseleave="hover(false)">
-            <span class="number">03</span>
-            <div>
-                <h2>Rigid Body</h2>
-                <p>Matter.js simulation. Gravity, collision detection, and restitution.</p>
+        <a href="webgl/index.html" class="card row-2">
+            <div class="card-icon">🔮</div>
+            <div style="flex-grow:1; display:flex; align-items:center; justify-content:center; opacity:0.3;">
+                <svg viewBox="0 0 100 100" width="100%"><circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="none" stroke-dasharray="10 5" /></svg>
             </div>
-            <span class="link-text">Start Simulation -></span>
+            <h2>GLSL Shader Lab</h2>
+            <p>Direct GPU programming. Mathematical visual art generated pixel-by-pixel using fragment shaders. Pure math, zero images.</p>
+            <div class="arrow-btn">Inspect Code <span>→</span></div>
         </a>
 
-        <a href="pixijs/index.html" class="card" onmouseenter="hover(true)" onmouseleave="hover(false)">
-            <span class="number">04</span>
-            <div>
-                <h2>Hyper Speed</h2>
-                <p>Pixi.js rendering benchmark. 1000+ sprites at 60 FPS.</p>
-            </div>
-            <span class="link-text">Test Performance -></span>
+        <a href="matterjs/index.html" class="card">
+            <div class="card-icon">🧱</div>
+            <h2>Rigid Body Physics</h2>
+            <p>Complex simulations featuring gravity, friction, and collision.</p>
+            <div class="arrow-btn">Simulate <span>→</span></div>
         </a>
 
-        <a href="webgl/index.html" class="card" onmouseenter="hover(true)" onmouseleave="hover(false)">
-            <span class="number">05</span>
-            <div>
-                <h2>Shader Math</h2>
-                <p>Native GLSL programming. Procedural art generated on GPU.</p>
-            </div>
-            <span class="link-text">View Code -></span>
+        <a href="pixijs/index.html" class="card span-2">
+            <div class="card-icon">🚀</div>
+            <h2>High-Performance Rendering</h2>
+            <p>Pixi.js benchmarking suite. Capable of rendering 1000+ sprite entities at a locked 60 FPS on mobile devices.</p>
+            <div class="arrow-btn">Run Benchmark <span>→</span></div>
         </a>
+
     </div>
 
-    <footer>
-        &copy; 2025 Anas Alhaj. Elite Digital Portfolio.
-    </footer>
-
     <script>
-        // === LOADER LOGIC ===
-        let count = 0;
-        const counter = document.querySelector('.counter');
-        const progress = document.querySelector('.progress');
-        const loader = document.querySelector('.loader');
-        const header = document.querySelector('#header');
+        // === Spotlight Effect Script ===
+        // هذا الكود يجعل الحدود تضيء عند مرور الماوس
+        const cards = document.getElementById('cards');
 
-        const interval = setInterval(() => {
-            count++;
-            counter.innerText = count + '%';
-            progress.style.width = count + '%';
-            
-            if (count === 100) {
-                clearInterval(interval);
-                setTimeout(() => {
-                    loader.style.opacity = '0';
-                    loader.style.pointerEvents = 'none';
-                    header.classList.add('visible');
-                }, 500);
+        cards.onmousemove = e => {
+            for(const card of document.getElementsByClassName('card')) {
+                const rect = card.getBoundingClientRect(),
+                      x = e.clientX - rect.left,
+                      y = e.clientY - rect.top;
+
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
             }
-        }, 20); // Speed of loader
-
-        // === CURSOR LOGIC ===
-        const cursor = document.querySelector('.cursor');
-        const follower = document.querySelector('.cursor-follower');
-        let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            cursor.style.left = mouseX + 'px';
-            cursor.style.top = mouseY + 'px';
-        });
-
-        setInterval(() => {
-            posX += (mouseX - posX) * 0.1;
-            posY += (mouseY - posY) * 0.1;
-            follower.style.left = posX + 'px';
-            follower.style.top = posY + 'px';
-        }, 10);
-
-        function hover(state) {
-            if(state) document.body.classList.add('hovering');
-            else document.body.classList.remove('hovering');
-        }
-
-        // === BACKGROUND PARTICLES ===
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let w, h, particles = [];
-
-        function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; init(); }
-        window.addEventListener('resize', resize);
-
-        class P {
-            constructor() {
-                this.x = Math.random() * w; this.y = Math.random() * h;
-                this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
-                this.size = Math.random() * 1.5;
-            }
-            update() {
-                this.x += this.vx; this.y += this.vy;
-                if(this.x < 0 || this.x > w) this.vx *= -1;
-                if(this.y < 0 || this.y > h) this.vy *= -1;
-            }
-            draw() {
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-                ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.fill();
-            }
-        }
-
-        function init() { particles = []; for(let i=0; i<80; i++) particles.push(new P()); }
-        
-        function animate() {
-            ctx.clearRect(0,0,w,h);
-            particles.forEach(p => {
-                p.update(); p.draw();
-                particles.forEach(p2 => {
-                    let dx = p.x - p2.x, dy = p.y - p2.y, d = Math.sqrt(dx*dx + dy*dy);
-                    if(d < 150) {
-                        ctx.beginPath(); ctx.strokeStyle = `rgba(255,255,255,${0.1 - d/1500})`;
-                        ctx.lineWidth = 0.5; ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-                    }
-                });
-            });
-            requestAnimationFrame(animate);
-        }
-        resize(); animate();
+        };
     </script>
 </body>
 </html>
