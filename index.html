@@ -4,209 +4,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anas Alhaj — Graphics Engineer</title>
+    <title>Anas Alhaj — Systems Architect</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         :root {
             --bg: #050505;
             --text-main: #ffffff;
-            --text-secondary: #888888;
-            --border: rgba(255, 255, 255, 0.08);
-            --surface: rgba(255, 255, 255, 0.03);
+            --text-dim: #666666;
+            --accent: #444444;
+            --line: rgba(255, 255, 255, 0.08);
+            --highlight: #ffffff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; /* المؤشر الدقيق */ }
         
         body {
             background-color: var(--bg); color: var(--text-main);
-            font-family: 'Inter', sans-serif; overflow-x: hidden;
+            font-family: 'Archivo', sans-serif; overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* === The Calm 3D Background === */
+        /* === The Background Blueprint Grid === */
+        .grid-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -2; opacity: 0.5;
+        }
+        
+        /* 3D Canvas Layer */
         #webgl {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
+            z-index: -1; opacity: 0.8; mix-blend-mode: screen; pointer-events: none;
         }
+
+        /* === UI Overlay (Technical Dashboard) === */
+        .ui-corner { position: fixed; font-family: 'Space Mono'; font-size: 0.7rem; color: var(--text-dim); z-index: 10; }
+        .top-left { top: 20px; left: 20px; }
+        .top-right { top: 20px; right: 20px; text-align: right; }
+        .btm-left { bottom: 20px; left: 20px; }
+        .btm-right { bottom: 20px; right: 20px; text-align: right; }
 
         /* === Navigation === */
         nav {
-            position: fixed; top: 0; width: 100%; padding: 30px 50px;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 10; mix-blend-mode: exclusion;
+            position: fixed; top: 50%; right: 40px; transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 20px; z-index: 50;
+            border-right: 1px solid var(--line); padding-right: 20px;
         }
-        .logo { font-family: 'Outfit'; font-weight: 700; letter-spacing: -0.02em; font-size: 1.2rem; }
-        .nav-links a { color: white; text-decoration: none; margin-left: 30px; font-size: 0.9rem; opacity: 0.7; transition: 0.3s; }
-        .nav-links a:hover { opacity: 1; }
+        nav a {
+            color: var(--text-dim); text-decoration: none; font-family: 'Space Mono'; 
+            font-size: 0.8rem; writing-mode: vertical-rl; text-orientation: mixed;
+            transition: 0.3s;
+        }
+        nav a:hover, nav a.active { color: var(--text-main); letter-spacing: 2px; }
 
-        /* === Hero === */
-        main { max-width: 1000px; margin: 0 auto; padding: 180px 20px 100px; }
+        /* === Main Content === */
+        main {
+            max-width: 1400px; margin: 0 auto; padding: 0 5%;
+        }
+
+        header {
+            height: 100vh; display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .code-tag {
+            font-family: 'Space Mono'; color: var(--text-dim); font-size: 0.9rem;
+            margin-bottom: 20px; display: block;
+        }
+        .code-tag::before { content: '< '; color: var(--highlight); }
+        .code-tag::after { content: ' />'; color: var(--highlight); }
 
         h1 {
-            font-family: 'Outfit', sans-serif; font-size: clamp(3rem, 6vw, 5.5rem);
-            font-weight: 700; line-height: 1.1; margin-bottom: 30px;
-            background: linear-gradient(180deg, #fff 0%, #888 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            opacity: 0; animation: fadeUp 1s ease forwards 0.5s;
-        }
-
-        .bio {
-            font-size: 1.2rem; color: var(--text-secondary); max-width: 550px;
-            line-height: 1.6; opacity: 0; animation: fadeUp 1s ease forwards 0.8s;
-        }
-
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* === Project List (Clean & Professional) === */
-        .work-section { margin-top: 120px; }
-        .section-label { font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.1em; margin-bottom: 40px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
-
-        .project {
-            display: grid; grid-template-columns: 0.5fr 2fr 1fr; align-items: center;
-            padding: 40px 0; border-bottom: 1px solid var(--border);
-            text-decoration: none; color: white; transition: 0.3s;
-            position: relative;
+            font-size: clamp(4rem, 10vw, 9rem); font-weight: 800; text-transform: uppercase;
+            line-height: 0.9; margin-left: -5px; letter-spacing: -0.02em;
         }
         
-        .project:hover { padding-left: 20px; background: linear-gradient(90deg, var(--surface), transparent); }
-        
-        .p-num { font-family: 'Outfit'; color: var(--text-secondary); font-size: 0.9rem; }
-        .p-info h2 { font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 5px; }
-        .p-info p { color: var(--text-secondary); font-size: 0.95rem; }
-        .p-tags { text-align: right; font-size: 0.8rem; font-family: monospace; color: var(--text-secondary); }
+        .role-desc {
+            margin-top: 40px; border-top: 1px solid var(--line); padding-top: 20px;
+            display: flex; gap: 40px; font-family: 'Space Mono'; font-size: 0.85rem; color: var(--text-dim);
+        }
+        .role-desc span { display: block; color: var(--text-main); margin-bottom: 5px; }
 
-        @media (max-width: 768px) {
-            .project { grid-template-columns: 1fr; gap: 10px; }
-            .p-num, .p-tags { display: none; }
+        /* === Project Section (Architectural Layout) === */
+        #projects { padding-top: 100px; padding-bottom: 100px; }
+        
+        .project-row {
+            border-top: 1px solid var(--line);
+            display: grid; grid-template-columns: 0.5fr 1.5fr 1fr 0.5fr;
+            padding: 40px 0; align-items: baseline;
+            text-decoration: none; color: inherit; transition: background 0.3s;
+        }
+        .project-row:hover { background: rgba(255,255,255,0.02); }
+        .project-row:last-child { border-bottom: 1px solid var(--line); }
+
+        .p-id { font-family: 'Space Mono'; color: var(--text-dim); }
+        .p-title { font-size: 2.5rem; font-weight: 600; line-height: 1; }
+        .p-desc { font-family: 'Space Mono'; font-size: 0.85rem; color: var(--text-dim); max-width: 300px; }
+        .p-tech { font-family: 'Space Mono'; font-size: 0.75rem; text-align: right; border: 1px solid var(--line); padding: 5px 10px; display: inline-block; }
+
+        @media (max-width: 900px) {
+            .project-row { grid-template-columns: 1fr; gap: 20px; }
+            .p-id, .p-tech { display: none; }
         }
 
-        footer { margin-top: 100px; padding: 50px 0; border-top: 1px solid var(--border); color: var(--text-secondary); font-size: 0.9rem; }
+        footer { 
+            padding: 50px 0; border-top: 1px solid var(--line); 
+            font-family: 'Space Mono'; font-size: 0.8rem; color: var(--text-dim);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
+    <div class="grid-bg"></div>
     <canvas id="webgl"></canvas>
 
+    <div class="ui-corner top-left">SYS.STATUS: ONLINE</div>
+    <div class="ui-corner top-right">LOC: AMMAN, JO</div>
+    <div class="ui-corner btm-left">FPS: <span id="fps">60</span></div>
+    <div class="ui-corner btm-right">SCROLL FOR DATA</div>
+
     <nav>
-        <div class="logo">ANAS ALHAJ.</div>
-        <div class="nav-links">
-            <a href="mailto:me@anas.com">Contact</a>
-            <a href="#">GitHub</a>
-        </div>
+        <a href="#projects">INDEX</a>
+        <a href="#" class="active">HOME</a>
     </nav>
 
     <main>
-        <h1>Engineering<br>Interactive Systems.</h1>
-        <p class="bio">
-            A Graphics Engineer specializing in WebGL, Physics Simulations, and High-Performance Interfaces. Crafting digital reality through code.
-        </p>
-
-        <div class="work-section">
-            <span class="section-label">Selected Projects</span>
-
-            <a href="canvas/index.html" class="project">
-                <span class="p-num">01</span>
-                <div class="p-info">
-                    <h2>Canvas Physics Engine</h2>
-                    <p>Proprietary particle system. CPU-based gather/scatter algorithms.</p>
+        <header>
+            <span class="code-tag">graphics_engineer</span>
+            <h1>ANAS<br>ALHAJ.</h1>
+            <div class="role-desc">
+                <div>
+                    <span>Specialization</span>
+                    WebGL & Physics
                 </div>
-                <div class="p-tags">[ VANILLA JS ]</div>
+                <div>
+                    <span>Stack</span>
+                    Three.js / GLSL
+                </div>
+                <div>
+                    <span>Status</span>
+                    Available
+                </div>
+            </div>
+        </header>
+
+        <section id="projects">
+            <span class="code-tag">selected_works</span>
+            
+            <a href="canvas/index.html" class="project-row">
+                <span class="p-id">001</span>
+                <div class="p-title">Chaos Engine</div>
+                <div class="p-desc">CPU-based particle system with custom gather/scatter algorithms.</div>
+                <div class="p-tech">VANILLA JS</div>
             </a>
 
-            <a href="threejs/index.html" class="project">
-                <span class="p-num">02</span>
-                <div class="p-info">
-                    <h2>3D Spatial Environment</h2>
-                    <p>Immersive architecture with PBR materials and dynamic lighting.</p>
-                </div>
-                <div class="p-tags">[ THREE.JS ]</div>
+            <a href="threejs/index.html" class="project-row">
+                <span class="p-id">002</span>
+                <div class="p-title">Spatial Web</div>
+                <div class="p-desc">Immersive 3D architecture featuring PBR materials and lighting.</div>
+                <div class="p-tech">THREE.JS</div>
             </a>
 
-            <a href="matterjs/index.html" class="project">
-                <span class="p-num">03</span>
-                <div class="p-info">
-                    <h2>Rigid Body Simulation</h2>
-                    <p>Interactive playground. Gravity, collision detection, restitution.</p>
-                </div>
-                <div class="p-tags">[ MATTER.JS ]</div>
+            <a href="matterjs/index.html" class="project-row">
+                <span class="p-id">003</span>
+                <div class="p-title">Dynamics</div>
+                <div class="p-desc">Rigid body physics playground with collision and restitution.</div>
+                <div class="p-tech">MATTER.JS</div>
             </a>
 
-            <a href="pixijs/index.html" class="project">
-                <span class="p-num">04</span>
-                <div class="p-info">
-                    <h2>High-Throughput Rendering</h2>
-                    <p>2D benchmark handling 5000+ entities at 60 FPS.</p>
-                </div>
-                <div class="p-tags">[ PIXI.JS ]</div>
+            <a href="pixijs/index.html" class="project-row">
+                <span class="p-id">004</span>
+                <div class="p-title">Benchmark</div>
+                <div class="p-desc">High-throughput rendering test. 5000+ entities at 60fps.</div>
+                <div class="p-tech">PIXI.JS</div>
             </a>
 
-            <a href="webgl/index.html" class="project">
-                <span class="p-num">05</span>
-                <div class="p-info">
-                    <h2>Native Shader Lab</h2>
-                    <p>Direct GLSL programming. GPU-accelerated mathematical art.</p>
-                </div>
-                <div class="p-tags">[ GLSL ]</div>
+            <a href="webgl/index.html" class="project-row">
+                <span class="p-id">005</span>
+                <div class="p-title">Shader Lab</div>
+                <div class="p-desc">Native GLSL programming. Mathematical visual generation.</div>
+                <div class="p-tech">GLSL</div>
             </a>
-        </div>
+
+        </section>
 
         <footer>
-            &copy; 2025 Anas Alhaj. Engineered with precision.
+            ENGINEERED BY ANAS ALHAJ © 2025
         </footer>
     </main>
 
     <script>
-        // === The Calm Geometric Wave ===
+        // === FPS Counter Simulation ===
+        setInterval(() => {
+            document.getElementById('fps').innerText = Math.floor(58 + Math.random() * 3);
+        }, 500);
+
+        // === Three.js Architectural Abstract ===
         const scene = new THREE.Scene();
-        // Fog to blend the wave into the background distance
-        scene.fog = new THREE.FogExp2(0x050505, 0.003);
-        
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        // Corrected f-string brackets
+        // Corrected f-string usage
         const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl'), alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-        // Create a Plane of Particles
-        const geometry = new THREE.BufferGeometry();
-        const width = 80;
-        const depth = 80;
-        const count = width * depth;
-        const positions = new Float32Array(count * 3);
-        const separation = 1.5;
-
-        for (let x = 0; x < width; x++) {
-            for (let z = 0; z < depth; z++) {
-                const i = (x * depth + z) * 3;
-                positions[i] = (x - width / 2) * separation;     // x
-                positions[i + 1] = 0;                            // y (height - will be animated)
-                positions[i + 2] = (z - depth / 2) * separation; // z
-            }
-        }
-
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-        const material = new THREE.PointsMaterial({
-            size: 0.12,
-            color: 0x444444, // Very subtle grey
-            transparent: true,
-            opacity: 0.8
+        // Create a complex geometric structure (The "Core")
+        const geometry = new THREE.IcosahedronGeometry(10, 0);
+        
+        // Wireframe Material
+        const material = new THREE.MeshBasicMaterial({ 
+            color: 0xffffff, 
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.1 
         });
+        
+        const core = new THREE.Mesh(geometry, material);
+        scene.add(core);
 
-        const particles = new THREE.Points(geometry, material);
-        scene.add(particles);
+        // Inner solid core
+        const innerGeo = new THREE.IcosahedronGeometry(6, 1);
+        const innerMat = new THREE.MeshBasicMaterial({ color: 0x222222, wireframe: true, transparent:true, opacity: 0.3 });
+        const innerCore = new THREE.Mesh(innerGeo, innerMat);
+        scene.add(innerCore);
 
-        camera.position.y = 15;
-        camera.position.z = 30;
-        camera.rotation.x = -0.5;
+        // Orbital Rings
+        const ringGeo1 = new THREE.TorusGeometry(18, 0.05, 16, 100);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.2 });
+        const ring1 = new THREE.Mesh(ringGeo1, ringMat);
+        ring1.rotation.x = Math.PI / 2;
+        scene.add(ring1);
 
-        // Animation Variables
-        let time = 0;
-        let mouseX = 0;
-        let mouseY = 0;
+        const ringGeo2 = new THREE.TorusGeometry(25, 0.05, 16, 100);
+        const ring2 = new THREE.Mesh(ringGeo2, ringMat);
+        ring2.rotation.y = Math.PI / 3;
+        scene.add(ring2);
 
+        camera.position.z = 35;
+
+        // Interaction
+        let mouseX = 0; let mouseY = 0;
         document.addEventListener('mousemove', (e) => {
             mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
             mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
@@ -214,25 +255,22 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            time += 0.005; // Very slow time step for calm movement
 
-            const positions = particles.geometry.attributes.position.array;
+            // Tech rotation
+            core.rotation.y += 0.002;
+            core.rotation.z += 0.001;
+            
+            innerCore.rotation.y -= 0.004;
+            innerCore.rotation.x -= 0.002;
 
-            for (let i = 0; i < count; i++) {
-                const i3 = i * 3;
-                const x = positions[i3];
-                const z = positions[i3 + 2];
-                
-                // The Wave Formula: Simple Sine waves combined
-                // Creates a breathing/ocean effect
-                const y = Math.sin(x * 0.1 + time) * 2 + Math.sin(z * 0.1 + time) * 2;
-                
-                positions[i3 + 1] = y;
-            }
-            particles.geometry.attributes.position.needsUpdate = true;
+            ring1.rotation.x += 0.001;
+            ring1.rotation.y += 0.001;
+            
+            ring2.rotation.z -= 0.001;
 
-            // Subtle Camera movement based on mouse
-            camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
+            // Parallax
+            camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
             camera.lookAt(0, 0, 0);
 
             renderer.render(scene, camera);
