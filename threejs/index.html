@@ -1,38 +1,185 @@
-<!DOCTYPE html><html><head><title>Three.js</title><style>body{margin:0;overflow:hidden;background:#000;}</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script></head><body>
-<div style="position:fixed;top:30px;left:30px;z-index:999;font-family:'Inter',sans-serif;">
-    <a href="../index.html" style="color:white;text-decoration:none;border:1px solid rgba(255,255,255,0.3);padding:12px 25px;border-radius:30px;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);font-size:0.9rem;transition:0.3s;">
-    ← Back to Hub
-    </a>
-</div>
-<script>
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.02);
-    const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({antialias:true});
-    renderer.setSize(innerWidth, innerHeight);
-    document.body.appendChild(renderer.domElement);
 
-    const geo = new THREE.IcosahedronGeometry(10, 1);
-    const mat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.1, metalness: 0.8, flatShading: true });
-    const mesh = new THREE.Mesh(geo, mat);
-    scene.add(mesh);
-
-    const wireGeo = new THREE.WireframeGeometry(geo);
-    const wireMat = new THREE.LineBasicMaterial({ color: 0x00f260 });
-    const wire = new THREE.LineSegments(wireGeo, wireMat);
-    mesh.add(wire);
-
-    const l1 = new THREE.PointLight(0x00f260, 2, 50); l1.position.set(10,10,10); scene.add(l1);
-    const l2 = new THREE.PointLight(0x0575e6, 2, 50); l2.position.set(-10,-10,10); scene.add(l2);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js | Spatial Architecture</title>
     
-    camera.position.z = 25;
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
-    function animate() {
-        requestAnimationFrame(animate);
-        mesh.rotation.x += 0.003; mesh.rotation.y += 0.005;
-        renderer.render(scene, camera);
-    }
-    animate();
-    window.onresize=()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);};
-</script></body></html>
+    <style>
+        :root {
+            --bg: #050505;
+            --text: #ffffff;
+            --dim: #666666;
+            --line: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--bg); color: var(--text);
+            font-family: 'Space Mono', monospace; overflow: hidden;
+        }
+
+        /* === الخلفية الشبكية === */
+        .grid-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1; opacity: 0.3; pointer-events: none;
+        }
+
+        /* === زر العودة === */
+        .back-btn {
+            position: fixed; top: 30px; left: 30px; z-index: 100;
+            text-decoration: none; color: var(--dim); border: 1px solid var(--line);
+            padding: 10px 20px; font-size: 0.8rem; transition: 0.3s;
+            background: rgba(5, 5, 5, 0.8);
+        }
+        .back-btn:hover { color: var(--text); border-color: var(--text); }
+
+        /* === لوحة البيانات (HUD) === */
+        .hud-panel {
+            position: fixed; top: 30px; right: 30px; width: 250px;
+            background: rgba(5, 5, 5, 0.9); border: 1px solid var(--line);
+            padding: 20px; z-index: 100; font-size: 0.75rem;
+        }
+        
+        .hud-row {
+            display: flex; justify-content: space-between; margin-bottom: 10px;
+            border-bottom: 1px solid var(--line); padding-bottom: 5px;
+        }
+        .hud-row:last-child { border: none; margin: 0; }
+        .hud-label { color: var(--dim); }
+        .hud-value { color: #ffffff; }
+
+        /* === تعليمات === */
+        .instructions {
+            position: fixed; bottom: 30px; right: 30px;
+            color: var(--dim); font-size: 0.7rem; text-align: right; pointer-events: none;
+        }
+        
+        .footer-info {
+            position: fixed; bottom: 30px; left: 30px; 
+            color: var(--dim); font-size: 0.7rem; pointer-events: none;
+        }
+
+        canvas { display: block; outline: none; }
+    </style>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+    
+    <a href="../index.html" class="back-btn">&lt; RETURN_TO_ROOT</a>
+
+    <div class="hud-panel">
+        <div class="hud-row">
+            <span class="hud-label">ENGINE</span>
+            <span class="hud-value">THREE.JS (WEBGL)</span>
+        </div>
+        <div class="hud-row">
+            <span class="hud-label">GEOMETRY</span>
+            <span class="hud-value">TORUS_KNOT</span>
+        </div>
+        <div class="hud-row">
+            <span class="hud-label">POLYGONS</span>
+            <span class="hud-value">12,480</span>
+        </div>
+        <div class="hud-row">
+            <span class="hud-label">STATUS</span>
+            <span class="hud-value">RENDERING...</span>
+        </div>
+    </div>
+
+    <div class="footer-info">
+        CAMERA: ORBIT_CONTROLS<br>
+        FOV: 75 DEGREES
+    </div>
+
+    <div class="instructions">
+        [ LEFT CLICK ] : ROTATE<br>
+        [ SCROLL ] : ZOOM IN/OUT
+    </div>
+
+    <script>
+        // Scene Setup
+        const scene = new THREE.Scene();
+        // Fog to blend deep objects into background color
+        scene.fog = new THREE.FogExp2(0x050505, 0.02);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // Orbit Controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 2.0;
+
+        // --- The Blueprint Object (Torus Knot) ---
+        const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+        
+        // Material 1: Wireframe (White Lines)
+        const wireframeMat = new THREE.MeshBasicMaterial({ 
+            color: 0xffffff, 
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.15 
+        });
+        const wireframeMesh = new THREE.Mesh(geometry, wireframeMat);
+        scene.add(wireframeMesh);
+
+        // Material 2: Points (Vertices) for extra tech feel
+        const pointsMat = new THREE.PointsMaterial({ 
+            color: 0xffffff, 
+            size: 0.1,
+            transparent: true, 
+            opacity: 0.5 
+        });
+        const pointsMesh = new THREE.Points(geometry, pointsMat);
+        scene.add(pointsMesh);
+
+        // Inner Core (Solid Black to block lines behind)
+        const solidMat = new THREE.MeshBasicMaterial({ color: 0x050505 });
+        const solidMesh = new THREE.Mesh(geometry, solidMat);
+        // Slightly smaller to avoid z-fighting with wireframe
+        solidMesh.scale.set(0.99, 0.99, 0.99); 
+        scene.add(solidMesh);
+
+        // Grid Helper (Floor)
+        const gridHelper = new THREE.GridHelper(200, 50, 0x333333, 0x111111);
+        gridHelper.position.y = -15;
+        scene.add(gridHelper);
+
+        camera.position.z = 30;
+
+        // Resize Handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); // required if damping or autoRotate
+            renderer.render(scene, camera);
+        }
+        animate();
+
+    </script>
+</body>
+</html>
