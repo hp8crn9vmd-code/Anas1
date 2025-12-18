@@ -4,277 +4,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anas Alhaj | Systems Architect</title>
+    <title>Anas Alhaj — Principal Engineer</title>
     
-    <meta name="description" content="Portfolio of Anas Alhaj - Graphics Engineer specializing in WebGL, Physics Simulation, and High-Performance UI.">
-    <meta property="og:title" content="Anas Alhaj - Systems Architect">
-    <meta property="og:description" content="Engineering Interactive Reality through Code.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/hp8crn9vmd-code/anas1/main/preview.png">
-    <meta name="theme-color" content="#050505">
-    
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M50 5 L95 27.5 L95 72.5 L50 95 L5 72.5 L5 27.5 Z' fill='none' stroke='%23ffffff' stroke-width='5'/><text x='50' y='65' font-family='monospace' font-size='40' fill='%23ffffff' text-anchor='middle'>A</text></svg>">
+    <meta name="description" content="Principal Graphics Engineer specializing in High-Performance WebGL & Physics Systems.">
+    <meta name="theme-color" content="#020202">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         :root {
-            --bg: #050505;
-            --text-main: #ffffff;
-            --text-dim: #666666;
-            --line: rgba(255, 255, 255, 0.08);
-            --highlight: #00f260; /* Success Green */
+            --bg: #020202; /* Premium Matte Black */
+            --text-main: #f0f0f0;
+            --text-muted: #666666;
+            --border: rgba(255, 255, 255, 0.06);
+            --accent: #ffffff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             background-color: var(--bg); color: var(--text-main);
-            font-family: 'Archivo', sans-serif; overflow-x: hidden;
+            font-family: 'Inter', sans-serif; overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* === 3. Preloader (Boot Sequence) === */
-        #preloader {
+        /* === 3D Data Cloud Background === */
+        #webgl {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--text-dim);
+            z-index: -1; pointer-events: none;
         }
-        .loader-text { margin-bottom: 20px; }
-        .loader-bar { width: 200px; height: 2px; background: #222; position: relative; overflow: hidden; }
-        .loader-progress { 
-            position: absolute; left: 0; top: 0; height: 100%; width: 0%; 
-            background: #fff; animation: load 1.5s ease-in-out forwards; 
-        }
-        @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
 
-        /* Main Styles */
-        .grid-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
-            background-size: 40px 40px; z-index: -2; opacity: 0.5;
-        }
-        #webgl { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.8; mix-blend-mode: screen; pointer-events: none; }
-
-        /* UI Overlays */
-        .ui-corner { position: fixed; font-family: 'Space Mono'; font-size: 0.7rem; color: var(--text-dim); z-index: 10; }
-        .top-left { top: 20px; left: 20px; }
-        .top-right { top: 20px; right: 20px; text-align: right; }
-        .btm-left { bottom: 20px; left: 20px; }
-        .btm-right { bottom: 20px; right: 20px; text-align: right; }
-
+        /* === Navigation (Minimalist) === */
         nav {
-            position: fixed; top: 50%; right: 40px; transform: translateY(-50%);
-            display: flex; flex-direction: column; gap: 20px; z-index: 50;
-            border-right: 1px solid var(--line); padding-right: 20px;
+            position: fixed; top: 0; width: 100%; padding: 30px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; mix-blend-mode: exclusion;
         }
-        nav a {
-            color: var(--text-dim); text-decoration: none; font-family: 'Space Mono'; 
-            font-size: 0.8rem; writing-mode: vertical-rl; text-orientation: mixed;
-            transition: 0.3s;
+        .brand { font-family: 'Oswald'; font-size: 1.1rem; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 700; }
+        .nav-right { display: flex; gap: 30px; font-size: 0.85rem; color: #aaa; }
+        .nav-right a { color: inherit; text-decoration: none; transition: 0.3s; }
+        .nav-right a:hover { color: #fff; }
+
+        /* === Hero Section === */
+        header {
+            height: 90vh; display: flex; flex-direction: column; justify-content: center;
+            padding: 0 5%; max-width: 1600px; margin: 0 auto;
         }
-        nav a:hover, nav a.active { color: var(--text-main); letter-spacing: 2px; }
 
-        main { max-width: 1400px; margin: 0 auto; padding: 0 5%; opacity: 0; animation: fadeIn 1s ease forwards 1.6s; }
-        @keyframes fadeIn { to { opacity: 1; } }
-
-        header { height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+        .label {
+            font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; 
+            letter-spacing: 0.2em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+        }
+        .label::before { content: ''; width: 40px; height: 1px; background: var(--text-muted); }
 
         h1 {
-            font-size: clamp(4rem, 10vw, 9rem); font-weight: 800; text-transform: uppercase;
-            line-height: 0.9; margin-left: -5px; letter-spacing: -0.02em;
-        }
-        
-        .code-tag { font-family: 'Space Mono'; color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px; display: block; }
-        .code-tag::before { content: '< '; color: #fff; } .code-tag::after { content: ' />'; color: #fff; }
-        
-        .role-desc {
-            margin-top: 40px; border-top: 1px solid var(--line); padding-top: 20px;
-            display: flex; gap: 40px; font-family: 'Space Mono'; font-size: 0.85rem; color: var(--text-dim);
+            font-family: 'Oswald', sans-serif; 
+            font-size: clamp(4rem, 11vw, 10rem); 
+            line-height: 0.9; text-transform: uppercase; letter-spacing: -0.02em;
+            margin-bottom: 40px; color: var(--text-main);
         }
 
-        /* === 4. Email Copy Interaction === */
-        .email-btn {
-            cursor: pointer; position: relative; transition: color 0.3s;
+        .bio-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;
+            border-top: 1px solid var(--border); padding-top: 30px;
+            max-width: 1000px;
         }
-        .email-btn:hover { color: #fff; }
-        .email-btn::after {
-            content: 'COPIED!'; position: absolute; top: -25px; left: 0;
-            font-size: 0.7rem; color: var(--highlight); opacity: 0; transition: 0.3s;
-        }
-        .email-btn.copied::after { opacity: 1; top: -35px; }
+        .bio-item h3 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 400; }
+        .bio-item p { font-size: 1rem; line-height: 1.5; }
 
-        #projects { padding-top: 100px; padding-bottom: 100px; }
+        @media (max-width: 768px) { .bio-grid { grid-template-columns: 1fr; } }
+
+        /* === Projects (The Ledger) === */
+        #work { padding: 100px 5%; max-width: 1600px; margin: 0 auto; }
+        
+        .section-head { 
+            display: flex; justify-content: space-between; align-items: flex-end; 
+            margin-bottom: 60px; border-bottom: 1px solid var(--text-main); padding-bottom: 20px;
+        }
+        .section-head h2 { font-family: 'Oswald'; font-size: 2rem; text-transform: uppercase; }
+        
+        .project-list { display: flex; flex-direction: column; }
+        
         .project-row {
-            border-top: 1px solid var(--line); display: grid; grid-template-columns: 0.5fr 1.5fr 1fr 0.5fr;
-            padding: 40px 0; align-items: baseline; text-decoration: none; color: inherit; transition: background 0.2s;
+            display: grid; grid-template-columns: 0.5fr 2fr 1fr 0.5fr;
+            padding: 35px 0; border-bottom: 1px solid var(--border);
+            text-decoration: none; color: inherit; align-items: center;
+            transition: all 0.3s ease; position: relative;
         }
-        .project-row:hover { background: rgba(255,255,255,0.02); }
-        .project-row:last-child { border-bottom: 1px solid var(--line); }
+        
+        .project-row:hover { padding-left: 20px; border-color: rgba(255,255,255,0.3); }
+        .project-row:hover .p-title { color: #fff; }
+        .project-row:hover .arrow { transform: translateX(0); opacity: 1; }
 
-        .p-id { font-family: 'Space Mono'; color: var(--text-dim); }
-        .p-title { font-size: 2.5rem; font-weight: 600; line-height: 1; }
-        .p-desc { font-family: 'Space Mono'; font-size: 0.85rem; color: var(--text-dim); max-width: 300px; }
-        .p-tech { font-family: 'Space Mono'; font-size: 0.75rem; text-align: right; border: 1px solid var(--line); padding: 5px 10px; }
+        .p-index { font-size: 0.85rem; color: var(--text-muted); font-family: 'Inter'; }
+        .p-title { font-family: 'Oswald'; font-size: 2.5rem; color: #ccc; transition: 0.3s; text-transform: uppercase; }
+        .p-tech { font-size: 0.85rem; color: var(--text-muted); text-align: right; }
+        .arrow { opacity: 0; transform: translateX(-20px); transition: 0.3s; text-align: right; font-size: 1.5rem; }
 
         @media (max-width: 900px) {
-            .project-row { grid-template-columns: 1fr; gap: 20px; }
-            .p-id, .p-tech { display: none; }
+            .project-row { grid-template-columns: 1fr; gap: 10px; }
+            .p-index, .p-tech, .arrow { display: none; }
+            .p-title { font-size: 1.8rem; }
         }
 
-        footer { padding: 50px 0; border-top: 1px solid var(--line); font-family: 'Space Mono'; font-size: 0.8rem; color: var(--text-dim); text-align: center; }
+        /* === Footer === */
+        footer {
+            padding: 80px 5%; border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.9rem;
+        }
+        .email-link { color: var(--text-main); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
     </style>
 </head>
 <body>
 
-    <div id="preloader">
-        <div class="loader-text">INITIALIZING SYSTEMS...</div>
-        <div class="loader-bar"><div class="loader-progress"></div></div>
-    </div>
-
-    <div class="grid-bg"></div>
     <canvas id="webgl"></canvas>
 
-    <div class="ui-corner top-left">SYS.STATUS: ONLINE</div>
-    <div class="ui-corner top-right">LOC: AMMAN, JO</div>
-    <div class="ui-corner btm-left">FPS: <span id="fps">--</span></div>
-    
-    <div class="ui-corner btm-right">
-        CONTACT: <span class="email-btn" onclick="copyEmail(this)">anas@alhaj.dev</span>
-    </div>
-
     <nav>
-        <a href="#projects">INDEX</a>
-        <a href="#" class="active">HOME</a>
+        <div class="brand">ANAS ALHAJ ®</div>
+        <div class="nav-right">
+            <span>AMMAN, JO</span>
+            <span>::</span>
+            <a href="mailto:contact@anas.com">AVAILABLE FOR HIRE</a>
+        </div>
     </nav>
 
-    <main>
-        <header>
-            <span class="code-tag">graphics_engineer</span>
-            <h1>ANAS<br>ALHAJ.</h1>
-            <div class="role-desc">
-                <div><span>Specialization</span>WebGL & Physics</div>
-                <div><span>Stack</span>Three.js / GLSL</div>
-                <div><span>Status</span>Available for Hire</div>
+    <header>
+        <div class="label">System Architect</div>
+        <h1>Engineering<br>Visual<br>Reality</h1>
+        
+        <div class="bio-grid">
+            <div class="bio-item">
+                <h3>FOCUS</h3>
+                <p>High-Performance WebGL, Physics Engines, and Interactive Systems.</p>
             </div>
-        </header>
+            <div class="bio-item">
+                <h3>METHOD</h3>
+                <p>Combining mathematical precision with organic user experience design.</p>
+            </div>
+            <div class="bio-item">
+                <h3>STACK</h3>
+                <p>Three.js, GLSL, Matter.js, Pixi.js, Vanilla JavaScript.</p>
+            </div>
+        </div>
+    </header>
 
-        <section id="projects">
-            <span class="code-tag">selected_works</span>
+    <section id="work">
+        <div class="section-head">
+            <h2>Selected Works</h2>
+            <span>(2024 — 2025)</span>
+        </div>
+
+        <div class="project-list">
             <a href="canvas/index.html" class="project-row">
-                <span class="p-id">001</span><div class="p-title">Chaos Engine</div>
-                <div class="p-desc">CPU-based particle system with custom gather/scatter algorithms.</div><div class="p-tech">VANILLA JS</div>
+                <span class="p-index">01 / 05</span>
+                <span class="p-title">Chaos Engine</span>
+                <span class="p-tech">VANILLA JS / PHYSICS</span>
+                <span class="arrow">→</span>
             </a>
+            
             <a href="threejs/index.html" class="project-row">
-                <span class="p-id">002</span><div class="p-title">Spatial Web</div>
-                <div class="p-desc">Immersive 3D architecture featuring PBR materials and lighting.</div><div class="p-tech">THREE.JS</div>
+                <span class="p-index">02 / 05</span>
+                <span class="p-title">Spatial Web</span>
+                <span class="p-tech">THREE.JS / WEBGL</span>
+                <span class="arrow">→</span>
             </a>
+            
             <a href="matterjs/index.html" class="project-row">
-                <span class="p-id">003</span><div class="p-title">Dynamics</div>
-                <div class="p-desc">Rigid body physics playground with collision and restitution.</div><div class="p-tech">MATTER.JS</div>
+                <span class="p-index">03 / 05</span>
+                <span class="p-title">Dynamics Lab</span>
+                <span class="p-tech">MATTER.JS / CAD</span>
+                <span class="arrow">→</span>
             </a>
+            
             <a href="pixijs/index.html" class="project-row">
-                <span class="p-id">004</span><div class="p-title">Benchmark</div>
-                <div class="p-desc">High-throughput rendering test. 5000+ entities at 60fps.</div><div class="p-tech">PIXI.JS</div>
+                <span class="p-index">04 / 05</span>
+                <span class="p-title">Stress Test</span>
+                <span class="p-tech">PIXI.JS / BENCHMARK</span>
+                <span class="arrow">→</span>
             </a>
+            
             <a href="webgl/index.html" class="project-row">
-                <span class="p-id">005</span><div class="p-title">Shader Lab</div>
-                <div class="p-desc">Native GLSL programming. Mathematical visual generation.</div><div class="p-tech">GLSL</div>
+                <span class="p-index">05 / 05</span>
+                <span class="p-title">Shader Core</span>
+                <span class="p-tech">GLSL / NATIVE</span>
+                <span class="arrow">→</span>
             </a>
-        </section>
+        </div>
+    </section>
 
-        <footer>ENGINEERED BY ANAS ALHAJ © 2025</footer>
-    </main>
+    <footer>
+        <div>© 2025 ANAS ALHAJ. ALL RIGHTS RESERVED.</div>
+        <a href="mailto:contact@anas.com" class="email-link">Get in touch</a>
+    </footer>
 
     <script>
-        // Remove Preloader
-        setTimeout(() => {
-            const loader = document.getElementById('preloader');
-            loader.style.opacity = '0';
-            loader.style.transition = 'opacity 0.5s ease';
-            setTimeout(() => loader.remove(), 500);
-            initThreeJS();
-        }, 1500);
-
-        // Copy Email Function
-        function copyEmail(el) {
-            navigator.clipboard.writeText('anas@alhaj.dev');
-            el.classList.add('copied');
-            setTimeout(() => el.classList.remove('copied'), 2000);
-        }
-
-        function initThreeJS() {
-            if (typeof THREE === 'undefined') return;
+        // === The Executive Background: Data Cloud ===
+        window.addEventListener('load', () => {
             const scene = new THREE.Scene();
-            const canvas = document.getElementById('webgl');
-            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: false, powerPreference: "high-performance" });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.setSize(window.innerWidth, window.innerHeight);
-
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl'), alpha: true, antialias: true, powerPreference: "high-performance" });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            const geometry = new THREE.IcosahedronGeometry(10, 0);
-            const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.1 });
-            const core = new THREE.Mesh(geometry, material);
-            scene.add(core);
+            // Create a cloud of points
+            const geometry = new THREE.BufferGeometry();
+            const count = 2000;
+            const posArray = new Float32Array(count * 3);
+            
+            for(let i = 0; i < count * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 40; // Spread wide
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.04,
+                color: 0x444444, // Subtle Grey
+                transparent: true,
+                opacity: 0.6,
+            });
+            
+            const particles = new THREE.Points(geometry, material);
+            scene.add(particles);
 
-            const innerGeo = new THREE.IcosahedronGeometry(6, 1);
-            const innerMat = new THREE.MeshBasicMaterial({ color: 0x222222, wireframe: true, transparent:true, opacity: 0.3 });
-            const innerCore = new THREE.Mesh(innerGeo, innerMat);
-            scene.add(innerCore);
+            camera.position.z = 15;
 
-            const ringGeo = new THREE.TorusGeometry(18, 0.05, 12, 50);
-            const ringMat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.2 });
-            const ring1 = new THREE.Mesh(ringGeo, ringMat);
-            ring1.rotation.x = Math.PI / 2;
-            scene.add(ring1);
-
-            const ring2 = new THREE.Mesh(ringGeo, ringMat);
-            ring2.scale.set(1.4, 1.4, 1.4);
-            ring2.rotation.y = Math.PI / 3;
-            scene.add(ring2);
-
-            camera.position.z = 35;
-
+            // Interactive Wave Effect
             let mouseX = 0; let mouseY = 0;
+            let targetX = 0; let targetY = 0;
+
             document.addEventListener('mousemove', (e) => {
-                mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-                mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+                mouseX = e.clientX / window.innerWidth - 0.5;
+                mouseY = e.clientY / window.innerHeight - 0.5;
             }, { passive: true });
 
-            const fpsElem = document.getElementById('fps');
-            let frameCount = 0; let lastTime = performance.now();
+            const clock = new THREE.Clock();
 
             function animate() {
                 requestAnimationFrame(animate);
-                core.rotation.y += 0.002;
-                core.rotation.z += 0.001;
-                innerCore.rotation.y -= 0.004;
-                ring1.rotation.x += 0.001;
-                ring2.rotation.z -= 0.001;
-                camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
-                camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
-                camera.lookAt(0, 0, 0);
-                renderer.render(scene, camera);
+                const time = clock.getElapsedTime();
 
-                frameCount++;
-                const currentTime = performance.now();
-                if (currentTime - lastTime >= 1000) {
-                    fpsElem.innerText = frameCount;
-                    frameCount = 0; lastTime = currentTime;
+                // Smooth Camera Follow
+                targetX = mouseX * 2;
+                targetY = mouseY * 2;
+                particles.rotation.y += 0.05 * (targetX - particles.rotation.y);
+                particles.rotation.x += 0.05 * (targetY - particles.rotation.x);
+
+                // Organic "Breathing" Motion
+                const positions = geometry.attributes.position.array;
+                for(let i=0; i<count; i++) {
+                    const i3 = i*3;
+                    // Sine wave based on position and time
+                    positions[i3+1] += Math.sin(time + positions[i3]) * 0.002;
                 }
+                geometry.attributes.position.needsUpdate = true;
+
+                renderer.render(scene, camera);
             }
             animate();
+
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             }, { passive: true });
-        }
+        });
     </script>
 </body>
 </html>
