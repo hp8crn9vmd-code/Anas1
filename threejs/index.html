@@ -7,6 +7,7 @@
     <title>Three.js | Spatial Architecture</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@400;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
@@ -16,6 +17,7 @@
             --text: #ffffff;
             --dim: #666666;
             --line: rgba(255, 255, 255, 0.1);
+            --accent: #ffffff;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -46,7 +48,7 @@
 
         /* === لوحة البيانات (HUD) === */
         .hud-panel {
-            position: fixed; top: 30px; right: 30px; width: 250px;
+            position: fixed; top: 30px; right: 30px; width: 280px;
             background: rgba(5, 5, 5, 0.9); border: 1px solid var(--line);
             padding: 20px; z-index: 100; font-size: 0.75rem;
         }
@@ -57,17 +59,16 @@
         }
         .hud-row:last-child { border: none; margin: 0; }
         .hud-label { color: var(--dim); }
-        .hud-value { color: #ffffff; }
+        .hud-value { color: var(--accent); }
 
         /* === تعليمات === */
-        .instructions {
-            position: fixed; bottom: 30px; right: 30px;
-            color: var(--dim); font-size: 0.7rem; text-align: right; pointer-events: none;
-        }
-        
         .footer-info {
             position: fixed; bottom: 30px; left: 30px; 
             color: var(--dim); font-size: 0.7rem; pointer-events: none;
+        }
+        .instructions {
+            position: fixed; bottom: 30px; right: 30px;
+            color: var(--dim); font-size: 0.7rem; text-align: right; pointer-events: none;
         }
 
         canvas { display: block; outline: none; }
@@ -85,33 +86,33 @@
             <span class="hud-value">THREE.JS (WEBGL)</span>
         </div>
         <div class="hud-row">
-            <span class="hud-label">GEOMETRY</span>
-            <span class="hud-value">TORUS_KNOT</span>
+            <span class="hud-label">OBJECT_ID</span>
+            <span class="hud-value">STRUCT_NODE_04</span>
         </div>
         <div class="hud-row">
-            <span class="hud-label">POLYGONS</span>
+            <span class="hud-label">VERTICES</span>
             <span class="hud-value">12,480</span>
         </div>
         <div class="hud-row">
-            <span class="hud-label">STATUS</span>
-            <span class="hud-value">RENDERING...</span>
+            <span class="hud-label">CAMERA</span>
+            <span class="hud-value">ORBIT_ACTIVE</span>
         </div>
     </div>
 
     <div class="footer-info">
-        CAMERA: ORBIT_CONTROLS<br>
-        FOV: 75 DEGREES
+        RENDER MODE: WIREFRAME<br>
+        ANTIALIAS: ON
     </div>
 
     <div class="instructions">
-        [ LEFT CLICK ] : ROTATE<br>
-        [ SCROLL ] : ZOOM IN/OUT
+        [ DRAG ] : ROTATE VIEW<br>
+        [ SCROLL ] : ZOOM I/O
     </div>
 
     <script>
-        // Scene Setup
+        // Setup Basic Scene
         const scene = new THREE.Scene();
-        // Fog to blend deep objects into background color
+        // Fog blends floor into background
         scene.fog = new THREE.FogExp2(0x050505, 0.02);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -126,44 +127,44 @@
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
         controls.autoRotate = true;
-        controls.autoRotateSpeed = 2.0;
+        controls.autoRotateSpeed = 1.0;
 
-        // --- The Blueprint Object (Torus Knot) ---
+        // --- The Blueprint Object (Complex Structure) ---
         const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
         
-        // Material 1: Wireframe (White Lines)
-        const wireframeMat = new THREE.MeshBasicMaterial({ 
+        // 1. Wireframe Material (The lines)
+        const wireMat = new THREE.MeshBasicMaterial({ 
             color: 0xffffff, 
             wireframe: true, 
             transparent: true, 
             opacity: 0.15 
         });
-        const wireframeMesh = new THREE.Mesh(geometry, wireframeMat);
-        scene.add(wireframeMesh);
+        const wireMesh = new THREE.Mesh(geometry, wireMat);
+        scene.add(wireMesh);
 
-        // Material 2: Points (Vertices) for extra tech feel
+        // 2. Points Material (Vertices dots)
         const pointsMat = new THREE.PointsMaterial({ 
             color: 0xffffff, 
-            size: 0.1,
+            size: 0.1, 
             transparent: true, 
-            opacity: 0.5 
+            opacity: 0.6 
         });
         const pointsMesh = new THREE.Points(geometry, pointsMat);
         scene.add(pointsMesh);
 
-        // Inner Core (Solid Black to block lines behind)
+        // 3. Inner Core (Black Solid to block lines behind)
         const solidMat = new THREE.MeshBasicMaterial({ color: 0x050505 });
         const solidMesh = new THREE.Mesh(geometry, solidMat);
-        // Slightly smaller to avoid z-fighting with wireframe
-        solidMesh.scale.set(0.99, 0.99, 0.99); 
+        solidMesh.scale.set(0.99, 0.99, 0.99); // Slightly smaller
         scene.add(solidMesh);
 
-        // Grid Helper (Floor)
-        const gridHelper = new THREE.GridHelper(200, 50, 0x333333, 0x111111);
+        // Grid Floor
+        const gridHelper = new THREE.GridHelper(200, 40, 0x333333, 0x111111);
         gridHelper.position.y = -15;
         scene.add(gridHelper);
 
-        camera.position.z = 30;
+        camera.position.z = 35;
+        camera.position.y = 10;
 
         // Resize Handler
         window.addEventListener('resize', () => {
@@ -175,11 +176,10 @@
         // Animation Loop
         function animate() {
             requestAnimationFrame(animate);
-            controls.update(); // required if damping or autoRotate
+            controls.update(); 
             renderer.render(scene, camera);
         }
         animate();
-
     </script>
 </body>
 </html>
