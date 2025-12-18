@@ -4,165 +4,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anas Alhaj | Graphics Engineer</title>
+    <meta name="description" content="Immersive Graphics Engineering Portfolio.">
     
-    <title>Anas Alhaj | Creative Graphics Engineer</title>
-    <meta name="description" content="Professional Graphics Engineering Portfolio featuring WebGL, Three.js, and Physics Simulations.">
-    <meta name="author" content="Anas Alhaj">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://hp8crn9vmd-code.github.io/anas1/">
-    <meta property="og:title" content="Anas Alhaj - Graphics Engineer">
-    <meta property="og:description" content="High-performance web graphics portfolio. Experience the future of web rendering.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/mrdoob/three.js/master/files/examples/webgl_geometry_cube.jpg">
-
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Anas Alhaj | Graphics Portfolio">
-    <meta property="twitter:description" content="Explore advanced WebGL and Physics simulations.">
-
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-
     <style>
-        :root { 
-            --primary: #00f260; 
-            --secondary: #0575e6;
-            --bg: #050505; 
-            --card-bg: rgba(255, 255, 255, 0.03); 
-            --border: rgba(255, 255, 255, 0.08); 
-        }
-        
-        * { box-sizing: border-box; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        :root { --primary: #00f260; --bg: #030303; --text: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; /* إخفاء الماوس العادي */ }
         
         body { 
-            margin: 0; background: var(--bg); color: #fff; 
-            font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; 
+            background-color: var(--bg); color: var(--text); 
+            font-family: 'Inter', sans-serif; overflow-x: hidden;
         }
 
-        /* تأثير الضجيج السينمائي للخلفية */
-        .grain {
+        /* === 1. Preloader (شاشة التحميل) === */
+        .loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-            pointer-events: none; z-index: -1;
+            background: #000; z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease;
         }
-        
-        /* تأثير التوهج الخلفي */
-        .glow {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(0, 242, 96, 0.15) 0%, transparent 70%);
-            filter: blur(100px); z-index: -2; pointer-events: none;
+        .loader-text {
+            font-family: 'Syncopate', sans-serif; font-weight: 700; font-size: 1.5rem;
+            letter-spacing: 5px; animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+        .loaded .loader { opacity: 0; pointer-events: none; }
+
+        /* === 2. Custom Cursor (الماوس الاحترافي) === */
+        .cursor-dot, .cursor-circle {
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
+            border-radius: 50%; pointer-events: none; z-index: 9998;
+        }
+        .cursor-dot { width: 8px; height: 8px; background: var(--primary); }
+        .cursor-circle {
+            width: 40px; height: 40px; border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: width 0.3s, height 0.3s, background 0.3s;
+        }
+        /* تكبير الماوس عند الروابط */
+        body.hovering .cursor-circle {
+            width: 60px; height: 60px; background: rgba(0, 242, 96, 0.1); border-color: var(--primary);
         }
 
-        header { 
-            height: 70vh; display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            text-align: center; padding: 20px;
-        }
+        /* === 3. Hero Section & Canvas === */
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4; }
         
-        h1 { 
-            font-size: clamp(3rem, 8vw, 6rem); margin: 0; font-weight: 700; letter-spacing: -2px; line-height: 1.1;
-            background: linear-gradient(180deg, #fff 0%, #aaa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        header {
+            height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; position: relative; z-index: 2;
         }
-        
-        .role { 
-            margin-top: 20px; font-size: 1.2rem; color: var(--primary); 
-            text-transform: uppercase; letter-spacing: 4px; border: 1px solid var(--border);
-            padding: 10px 20px; border-radius: 50px; background: rgba(0,0,0,0.3);
+        h1 {
+            font-family: 'Syncopate', sans-serif; font-size: clamp(2rem, 6vw, 5rem);
+            font-weight: 700; letter-spacing: -2px; text-transform: uppercase;
+            background: linear-gradient(to right, #fff, #666); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            opacity: 0; transform: translateY(50px); animation: slideUp 1s ease forwards 1s;
+        }
+        .subtitle {
+            font-size: 1rem; color: var(--primary); margin-top: 20px; letter-spacing: 4px; text-transform: uppercase;
+            opacity: 0; transform: translateY(30px); animation: slideUp 1s ease forwards 1.2s;
         }
 
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* === 4. Grid & Cards === */
         .grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;
-            max-width: 1400px; margin: -100px auto 100px; padding: 0 40px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;
+            max-width: 1400px; margin: 0 auto 100px; padding: 0 40px; position: relative; z-index: 2;
         }
-        
+
         .card {
-            background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(20px);
-            border-radius: 24px; padding: 40px; text-decoration: none; color: white;
-            display: flex; flex-direction: column; justify-content: space-between; height: 350px;
-            position: relative; overflow: hidden; group;
+            background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px); padding: 40px; border-radius: 4px;
+            text-decoration: none; color: white; transition: 0.4s;
+            opacity: 0; transform: translateY(50px); /* للإخفاء قبل الأنيميشن */
         }
         
-        .card:hover { 
-            transform: translateY(-20px) scale(1.02); 
-            border-color: var(--primary); 
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-        }
-        
-        .card h2 { font-size: 2rem; margin: 0 0 10px 0; }
-        .card p { color: #888; font-size: 1.1rem; line-height: 1.6; }
-        
-        .tech-tag {
-            position: absolute; bottom: 40px; right: 40px;
-            font-size: 3rem; opacity: 0.1; font-weight: 900;
-        }
+        /* حركة ظهور البطاقات */
+        .loaded .card { animation: cardReveal 0.8s ease forwards; }
+        /* تأخير زمني لكل بطاقة */
+        .card:nth-child(1) { animation-delay: 1.4s; }
+        .card:nth-child(2) { animation-delay: 1.5s; }
+        .card:nth-child(3) { animation-delay: 1.6s; }
+        .card:nth-child(4) { animation-delay: 1.7s; }
+        .card:nth-child(5) { animation-delay: 1.8s; }
 
-        .badge {
-            align-self: flex-start; padding: 8px 16px; border-radius: 50px; 
-            font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
-            background: var(--primary); color: #000; margin-top: auto;
-        }
+        @keyframes cardReveal { to { opacity: 1; transform: translateY(0); } }
 
-        /* Footer */
-        footer { 
-            text-align: center; padding: 60px 20px; border-top: 1px solid var(--border); 
-            color: #666; font-size: 0.9rem;
+        .card:hover { border-color: var(--primary); transform: translateY(-10px); }
+        .card h2 { font-family: 'Syncopate', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; }
+        .card p { color: #888; font-size: 0.95rem; line-height: 1.6; }
+        .meta { font-size: 0.8rem; color: var(--primary); margin-top: 20px; display: block; font-weight: 600; letter-spacing: 1px; }
+
+        footer { text-align: center; padding: 40px; color: #444; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05); }
+
+        /* الموبايل */
+        @media (max-width: 768px) {
+            * { cursor: auto !important; } /* إلغاء الماوس المخصص للموبايل */
+            .cursor-dot, .cursor-circle { display: none; }
+            h1 { font-size: 2.5rem; }
         }
-        .socials { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
-        .socials a { color: #fff; text-decoration: none; font-size: 1.2rem; opacity: 0.7; }
-        .socials a:hover { opacity: 1; color: var(--primary); }
     </style>
 </head>
 <body>
-    <div class="grain"></div>
-    <div class="glow"></div>
-    
+
+    <div class="loader"><div class="loader-text">ANAS.ALHAJ // LOADING</div></div>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+
+    <canvas id="bg-canvas"></canvas>
+
     <header>
-        <h1>ANAS ALHAJ</h1>
-        <div class="role">Graphics Engineer</div>
-        <p style="color: #666; margin-top: 20px; max-width: 500px;">
-            Crafting immersive digital experiences using advanced WebGL, Physics Engines, and Interactive Shaders.
+        <h1>Anas Alhaj</h1>
+        <div class="subtitle">Creative Graphics Engineer</div>
+        <p style="margin-top: 20px; color: #666; max-width: 400px; line-height: 1.5;">
+            Specialized in WebGL, Physics Simulations, and High-Performance Interactive Experiences.
         </p>
     </header>
-    
+
     <div class="grid">
-        <a href="canvas/index.html" class="card">
-            <div class="tech-tag">JS</div>
-            <div><h2>Canvas Chaos</h2><p>Custom particle physics engine written in Vanilla JS. Features gather/scatter algorithms interacting with user input.</p></div>
-            <span class="badge">CPU Physics</span>
+        <a href="canvas/index.html" class="card" onmouseenter="hover(true)" onmouseleave="hover(false)">
+            <h2>Canvas Chaos</h2>
+            <p>A custom-built particle engine demonstrating gather/scatter physics algorithms purely on the CPU.</p>
+            <span class="meta">VIEW DEMO -></span>
         </a>
 
-        <a href="threejs/index.html" class="card">
-            <div class="tech-tag">3D</div>
-            <div><h2>Three.js Scene</h2><p>High-fidelity 3D rendering pipeline. Showcasing PBR materials, dynamic lighting, and complex geometry.</p></div>
-            <span class="badge">WebGL</span>
+        <a href="threejs/index.html" class="card" onmouseenter="hover(true)" onmouseleave="hover(false)">
+            <h2>Three.js Core</h2>
+            <p>Interactive 3D environment with PBR materials, dynamic lighting, and complex geometry manipulation.</p>
+            <span class="meta">VIEW DEMO -></span>
         </a>
 
-        <a href="matterjs/index.html" class="card">
-            <div class="tech-tag">Phy</div>
-            <div><h2>Matter.js</h2><p>Realistic 2D rigid body simulation. Handles collision detection, gravity, restitution, and friction.</p></div>
-            <span class="badge">Simulation</span>
+        <a href="matterjs/index.html" class="card" onmouseenter="hover(true)" onmouseleave="hover(false)">
+            <h2>Physics Lab</h2>
+            <p>Powered by Matter.js. Rigid body dynamics simulation featuring gravity, collisions, and friction.</p>
+            <span class="meta">VIEW DEMO -></span>
         </a>
 
-        <a href="pixijs/index.html" class="card">
-            <div class="tech-tag">2D</div>
-            <div><h2>Pixi.js</h2><p>Performance benchmark utilizing WebGL batch rendering to handle thousands of sprites at 60 FPS.</p></div>
-            <span class="badge">High Perf</span>
+        <a href="pixijs/index.html" class="card" onmouseenter="hover(true)" onmouseleave="hover(false)">
+            <h2>Pixi.js Speed</h2>
+            <p>WebGL 2D rendering benchmark. Handling thousands of sprite entities at a stable 60 FPS.</p>
+            <span class="meta">VIEW DEMO -></span>
         </a>
 
-        <a href="webgl/index.html" class="card">
-            <div class="tech-tag">GL</div>
-            <div><h2>Shader Lab</h2><p>Direct GLSL fragment shader programming. Mathematical visual art rendered purely on the GPU.</p></div>
-            <span class="badge">Native</span>
+        <a href="webgl/index.html" class="card" onmouseenter="hover(true)" onmouseleave="hover(false)">
+            <h2>Raw Shaders</h2>
+            <p>Direct GLSL programming. Mathematical procedural art generated pixel-by-pixel on the GPU.</p>
+            <span class="meta">VIEW DEMO -></span>
         </a>
     </div>
 
     <footer>
-        <div class="socials">
-            <a href="#">GitHub</a>
-            <a href="#">LinkedIn</a>
-            <a href="#">Email</a>
-            <a href="#">Twitter</a>
-        </div>
-        <p>&copy; 2025 Anas Alhaj. All Rights Reserved. <br> Engineered with precision.</p>
+        &copy; 2025 Anas Alhaj. Engineering Excellence.
     </footer>
+
+    <script>
+        // === Loader Logic ===
+        window.addEventListener('load', () => {
+            setTimeout(() => { document.body.classList.add('loaded'); }, 1000);
+        });
+
+        // === Custom Cursor Logic ===
+        const dot = document.querySelector('.cursor-dot');
+        const circle = document.querySelector('.cursor-circle');
+        
+        let mouseX = 0, mouseY = 0;
+        let circleX = 0, circleY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            dot.style.left = mouseX + 'px'; dot.style.top = mouseY + 'px';
+        });
+
+        function animateCursor() {
+            // Smooth follow effect
+            circleX += (mouseX - circleX) * 0.15;
+            circleY += (mouseY - circleY) * 0.15;
+            circle.style.left = circleX + 'px'; circle.style.top = circleY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        function hover(isHovering) {
+            if (isHovering) document.body.classList.add('hovering');
+            else document.body.classList.remove('hovering');
+        }
+
+        // === Background Canvas (Constellation Effect) ===
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let w, h;
+        let stars = [];
+
+        function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; initStars(); }
+        window.addEventListener('resize', resize);
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * w; this.y = Math.random() * h;
+                this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x<0 || this.x>w) this.vx *= -1;
+                if(this.y<0 || this.y>h) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.fillStyle = '#ffffff'; ctx.fill();
+            }
+        }
+
+        function initStars() {
+            stars = [];
+            for(let i=0; i<100; i++) stars.push(new Star());
+        }
+
+        function animateBg() {
+            ctx.clearRect(0, 0, w, h);
+            stars.forEach(star => {
+                star.update(); star.draw();
+                // Draw connecting lines
+                stars.forEach(otherStar => {
+                    let dx = star.x - otherStar.x;
+                    let dy = star.y - otherStar.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if(dist < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 - dist/1500})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(star.x, star.y);
+                        ctx.lineTo(otherStar.x, otherStar.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+            requestAnimationFrame(animateBg);
+        }
+
+        resize();
+        animateBg();
+    </script>
 </body>
 </html>
