@@ -4,192 +4,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anas Alhaj | Design Engineer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@200;800&display=swap" rel="stylesheet">
+    <title>Anas Alhaj - Design Engineer</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg: #080808;
-            --card-bg: #111111;
-            --text-main: #ffffff;
-            --text-muted: #888888;
-            --accent: #d4ff00; /* Neon Lime for high contrast */
-            --border: rgba(255, 255, 255, 0.08);
+            --bg: #0b0c10;
+            --surface: #14151a;
+            --surface-hover: #1c1d24;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.15);
+            --text-primary: #ededed;
+            --text-secondary: #8a8f98;
+            --accent-glow: radial-gradient(circle at center, rgba(120, 119, 198, 0.15), transparent 60%);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            background-color: var(--bg); color: var(--text-main);
-            font-family: 'Inter', sans-serif; overflow-x: hidden;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            line-height: 1.5;
         }
 
-        /* === Texture Overlay (Noise) === */
-        .noise {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url("https://grainy-gradients.vercel.app/noise.svg");
-            opacity: 0.05; pointer-events: none; z-index: 9999;
+        /* === خلفية الهالة الضوئية (Aurora) === */
+        .aurora {
+            position: fixed; top: -50%; left: 50%; transform: translateX(-50%);
+            width: 100vw; height: 100vw;
+            background: var(--accent-glow);
+            z-index: -1; pointer-events: none; opacity: 0.6;
         }
 
-        /* === Hero Section === */
-        header {
-            padding: 120px 5% 60px; max-width: 1400px; margin: 0 auto;
+        /* === الهيكل العام === */
+        main {
+            max-width: 1000px; margin: 0 auto; padding: 120px 24px;
         }
+
+        /* === الرأس (Header) === */
+        header { margin-bottom: 100px; }
         
+        .role {
+            font-size: 0.875rem; color: var(--text-secondary); 
+            text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500;
+            margin-bottom: 16px; display: block;
+        }
+
         h1 {
-            font-family: 'Manrope', sans-serif; font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
-            margin-bottom: 20px;
+            font-size: 3.5rem; font-weight: 500; letter-spacing: -0.02em;
+            background: linear-gradient(180deg, #fff, #888);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
         }
         
-        .bio {
-            font-size: 1.2rem; color: var(--text-muted); max-width: 600px;
-            line-height: 1.6; border-left: 2px solid var(--accent); padding-left: 20px;
+        .intro {
+            font-size: 1.25rem; color: var(--text-secondary); max-width: 600px;
+            font-weight: 300;
         }
 
-        /* === The Bento Grid === */
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 أعمدة */
-            grid-template-rows: repeat(2, 350px); /* صفين بارتفاع ثابت */
-            gap: 20px;
-            padding: 0 5% 100px; max-width: 1400px; margin: 0 auto;
+        /* === الشبكة (Projects Grid) === */
+        .grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
         }
+        
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
 
-        /* Card Styles with Spotlight Effect */
+        /* === البطاقات (The Cards) === */
         .card {
-            background: var(--card-bg);
+            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 24px;
-            position: relative; overflow: hidden;
-            text-decoration: none; color: white;
-            transition: transform 0.3s ease;
-            display: flex; flex-direction: column; padding: 30px;
-            group;
+            border-radius: 12px;
+            padding: 32px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex; flex-direction: column; height: 280px;
         }
 
-        /* Spotlight Element */
-        .card::before {
-            content: "";
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 24px; padding: 2px; 
-            background: radial-gradient(
-                800px circle at var(--mouse-x) var(--mouse-y), 
-                rgba(255, 255, 255, 0.4), transparent 40%
-            ); 
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor; mask-composite: exclude;
-            opacity: 0; transition: opacity 0.5s; pointer-events: none;
+        .card:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
         }
-        
-        .card:hover::before { opacity: 1; }
-        .card:hover { transform: scale(0.99); }
 
-        /* Card Content layout */
-        .card-icon {
-            font-size: 2rem; margin-bottom: auto; color: var(--accent);
-            background: rgba(255, 255, 255, 0.05); width: 60px; height: 60px;
-            display: flex; align-items: center; justify-content: center; border-radius: 12px;
+        /* أيقونة المشروع */
+        .icon-box {
+            width: 48px; height: 48px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: #fff;
+            margin-bottom: auto; /* يدفع المحتوى للأسفل */
         }
-        
-        .card h2 { font-family: 'Manrope'; font-size: 1.8rem; margin-bottom: 10px; }
-        .card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
-        
-        .arrow-btn {
-            margin-top: 20px; font-size: 0.9rem; font-weight: 600; 
-            text-transform: uppercase; letter-spacing: 1px;
-            display: flex; align-items: center; gap: 10px; opacity: 0.7; transition: 0.3s;
-        }
-        .card:hover .arrow-btn { opacity: 1; color: var(--accent); gap: 15px; }
 
-        /* === Grid Spans (الاحترافية تكمن هنا) === */
+        /* نصوص البطاقة */
+        .card h2 {
+            font-size: 1.1rem; font-weight: 500; color: var(--text-primary);
+            margin-bottom: 8px;
+        }
         
-        /* البطاقة الأولى عريضة جداً */
-        .span-2 { grid-column: span 2; }
-        
-        /* البطاقة الطويلة */
-        .row-2 { grid-row: span 2; }
+        .card p {
+            font-size: 0.95rem; color: var(--text-secondary);
+            line-height: 1.6;
+        }
 
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .bento-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
-            .span-2 { grid-column: span 1; }
+        /* السهم المخفي */
+        .arrow {
+            position: absolute; top: 32px; right: 32px;
+            opacity: 0; transform: translateX(-10px);
+            transition: all 0.3s ease; color: var(--text-primary);
         }
-        @media (max-width: 600px) {
-            .bento-grid { grid-template-columns: 1fr; }
-            h1 { font-size: 3rem; }
+        
+        .card:hover .arrow { opacity: 1; transform: translateX(0); }
+
+        /* === التذييل (Footer) === */
+        footer {
+            margin-top: 120px; padding-top: 40px;
+            border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between;
+            font-size: 0.9rem; color: var(--text-secondary);
         }
+        
+        .links a {
+            color: var(--text-secondary); text-decoration: none; margin-left: 20px;
+            transition: color 0.2s;
+        }
+        .links a:hover { color: var(--text-primary); }
 
     </style>
 </head>
 <body>
-    <div class="noise"></div>
 
-    <header>
-        <h1>ENGINEERING<br><span style="color:var(--accent)">INTERACTION.</span></h1>
-        <div class="bio">
-            Anas Alhaj. A multidisciplinary graphics engineer specializing in WebGL, high-performance rendering, and interactive physics simulations.
+    <div class="aurora"></div>
+
+    <main>
+        <header>
+            <span class="role">Graphics Engineer</span>
+            <h1>Anas Alhaj.</h1>
+            <p class="intro">
+                Crafting high-performance digital interfaces and physics simulations. 
+                Focusing on WebGL, interaction design, and mathematical art.
+            </p>
+        </header>
+
+        <div class="grid">
+            <a href="canvas/index.html" class="card">
+                <div class="icon-box">●</div>
+                <div class="arrow">→</div>
+                <div>
+                    <h2>Canvas Physics Engine</h2>
+                    <p>A proprietary particle system built on the Canvas API. Demonstrating CPU-based gather and scatter algorithms with 60fps performance.</p>
+                </div>
+            </a>
+
+            <a href="threejs/index.html" class="card">
+                <div class="icon-box">◆</div>
+                <div class="arrow">→</div>
+                <div>
+                    <h2>Three.js Architecture</h2>
+                    <p>Interactive 3D environment utilizing PBR materials and dynamic lighting. A study in spatial web design.</p>
+                </div>
+            </a>
+
+            <a href="matterjs/index.html" class="card">
+                <div class="icon-box">▲</div>
+                <div class="arrow">→</div>
+                <div>
+                    <h2>Rigid Body Simulation</h2>
+                    <p>Physics playground powered by Matter.js. Showcasing gravity, collision detection, and restitution forces.</p>
+                </div>
+            </a>
+
+            <a href="webgl/index.html" class="card">
+                <div class="icon-box">⚡</div>
+                <div class="arrow">→</div>
+                <div>
+                    <h2>Native Shader Lab</h2>
+                    <p>Direct GLSL programming. Rendering mathematical visuals purely on the GPU without external assets.</p>
+                </div>
+            </a>
+            
+             <a href="pixijs/index.html" class="card" style="grid-column: span 2;">
+                <div class="icon-box">∞</div>
+                <div class="arrow">→</div>
+                <div>
+                    <h2>Pixi.js Benchmark</h2>
+                    <p>High-throughput 2D rendering test. Capable of handling thousands of sprites simultaneously.</p>
+                </div>
+            </a>
         </div>
-    </header>
 
-    <div class="bento-grid" id="cards">
-        
-        <a href="canvas/index.html" class="card span-2">
-            <div class="card-icon">⚡</div>
-            <div style="height: 100px;"></div> <h2>Canvas Chaos Engine</h2>
-            <p>A proprietary particle physics system built from scratch. CPU-based gather/scatter algorithms interacting with user input in real-time.</p>
-            <div class="arrow-btn">Explore Engine <span>→</span></div>
-        </a>
-
-        <a href="threejs/index.html" class="card">
-            <div class="card-icon">🧊</div>
-            <h2>3D Space</h2>
-            <p>Immersive WebGL environments with PBR materials and dynamic lighting.</p>
-            <div class="arrow-btn">View 3D <span>→</span></div>
-        </a>
-
-        <a href="webgl/index.html" class="card row-2">
-            <div class="card-icon">🔮</div>
-            <div style="flex-grow:1; display:flex; align-items:center; justify-content:center; opacity:0.3;">
-                <svg viewBox="0 0 100 100" width="100%"><circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="none" stroke-dasharray="10 5" /></svg>
+        <footer>
+            <div>© 2025 Anas Alhaj</div>
+            <div class="links">
+                <a href="#">GitHub</a>
+                <a href="#">LinkedIn</a>
+                <a href="#">Email</a>
             </div>
-            <h2>GLSL Shader Lab</h2>
-            <p>Direct GPU programming. Mathematical visual art generated pixel-by-pixel using fragment shaders. Pure math, zero images.</p>
-            <div class="arrow-btn">Inspect Code <span>→</span></div>
-        </a>
+        </footer>
+    </main>
 
-        <a href="matterjs/index.html" class="card">
-            <div class="card-icon">🧱</div>
-            <h2>Rigid Body Physics</h2>
-            <p>Complex simulations featuring gravity, friction, and collision.</p>
-            <div class="arrow-btn">Simulate <span>→</span></div>
-        </a>
-
-        <a href="pixijs/index.html" class="card span-2">
-            <div class="card-icon">🚀</div>
-            <h2>High-Performance Rendering</h2>
-            <p>Pixi.js benchmarking suite. Capable of rendering 1000+ sprite entities at a locked 60 FPS on mobile devices.</p>
-            <div class="arrow-btn">Run Benchmark <span>→</span></div>
-        </a>
-
-    </div>
-
-    <script>
-        // === Spotlight Effect Script ===
-        // هذا الكود يجعل الحدود تضيء عند مرور الماوس
-        const cards = document.getElementById('cards');
-
-        cards.onmousemove = e => {
-            for(const card of document.getElementsByClassName('card')) {
-                const rect = card.getBoundingClientRect(),
-                      x = e.clientX - rect.left,
-                      y = e.clientY - rect.top;
-
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-            }
-        };
-    </script>
 </body>
 </html>
