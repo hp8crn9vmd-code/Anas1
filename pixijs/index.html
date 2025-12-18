@@ -1,0 +1,39 @@
+<!DOCTYPE html><html><head><title>Pixi.js</title><style>body{margin:0;overflow:hidden;background:#000;}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.2.4/pixi.min.js"></script></head><body>
+<div style="position:fixed;top:30px;left:30px;z-index:999;font-family:'Inter',sans-serif;">
+    <a href="../index.html" style="color:white;text-decoration:none;border:1px solid rgba(255,255,255,0.3);padding:12px 25px;border-radius:30px;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);font-size:0.9rem;transition:0.3s;">
+    ← Back to Hub
+    </a>
+</div>
+<script>
+    const app = new PIXI.Application({ width: innerWidth, height: innerHeight, backgroundColor: 0x000000, antialias: true });
+    document.body.appendChild(app.view);
+    
+    const g = new PIXI.Graphics();
+    g.beginFill(0xffffff); g.drawCircle(0,0,10); g.endFill();
+    const tex = app.renderer.generateTexture(g);
+    
+    const container = new PIXI.Container();
+    app.stage.addChild(container);
+
+    const particles = [];
+    for(let i=0; i<1000; i++) {
+        const s = new PIXI.Sprite(tex);
+        s.anchor.set(0.5);
+        s.tint = [0x00f260, 0x0575e6, 0xff0055][Math.floor(Math.random()*3)];
+        s.x = Math.random() * app.screen.width;
+        s.y = Math.random() * app.screen.height;
+        s.scale.set(Math.random()*0.5 + 0.2);
+        particles.push({s:s, vx:(Math.random()-0.5)*2, vy:(Math.random()-0.5)*2});
+        container.addChild(s);
+    }
+    
+    app.ticker.add(() => {
+        particles.forEach(p => {
+            p.s.x += p.vx; p.s.y += p.vy;
+            if(p.s.x<0) p.s.x=app.screen.width; if(p.s.x>app.screen.width) p.s.x=0;
+            if(p.s.y<0) p.s.y=app.screen.height; if(p.s.y>app.screen.height) p.s.y=0;
+        });
+    });
+    window.onresize = () => app.renderer.resize(innerWidth, innerHeight);
+</script></body></html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><title>Canvas Physics</title><style>body{margin:0;overflow:hidden;background:#050505;}</style></head><body>
+<div style="position:fixed;top:30px;left:30px;z-index:999;font-family:'Inter',sans-serif;">
+    <a href="../index.html" style="color:white;text-decoration:none;border:1px solid rgba(255,255,255,0.3);padding:12px 25px;border-radius:30px;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);font-size:0.9rem;transition:0.3s;">
+    ← Back to Hub
+    </a>
+</div>
+<canvas id="c"></canvas>
+<script>
+const c=document.getElementById('c'), x=c.getContext('2d');
+let w,h,p=[]; const m={x:null,y:null};
+const cols=['#00f260','#0575e6','#ffffff'];
+onresize=()=>{w=c.width=innerWidth;h=c.height=innerHeight;init();};
+onmousemove=e=>{m.x=e.clientX;m.y=e.clientY;};
+class P{
+    constructor(){this.init();}
+    init(){this.x=Math.random()*w;this.y=Math.random()*h;this.vx=(Math.random()-0.5)*2;this.vy=(Math.random()-0.5)*2;this.r=Math.random()*2+1;this.col=cols[Math.floor(Math.random()*3)];}
+    up(){
+        this.x+=this.vx;this.y+=this.vy;
+        if(this.x<0||this.x>w)this.vx*=-1;if(this.y<0||this.y>h)this.vy*=-1;
+        if(m.x){
+            let dx=m.x-this.x,dy=m.y-this.y,d=Math.sqrt(dx*dx+dy*dy);
+            if(d<250){this.vx+=dx/d*0.5;this.vy+=dy/d*0.5;} 
+        }
+        const l=6;if(this.vx>l)this.vx=l;if(this.vx<-l)this.vx=-l;if(this.vy>l)this.vy=l;if(this.vy<-l)this.vy=-l;
+        this.vx*=0.98; this.vy*=0.98;
+    }
+    dr(){x.beginPath();x.arc(this.x,this.y,this.r,0,7);x.fillStyle=this.col;x.fill();}
+}
+function init(){p=[];for(let i=0;i<300;i++)p.push(new P());}
+function loop(){requestAnimationFrame(loop);x.fillStyle='rgba(5,5,5,0.2)';x.fillRect(0,0,w,h);p.forEach(e=>{e.up();e.dr();});}
+onresize();loop();
+</script></body></html>

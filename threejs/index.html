@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><title>Three.js</title><style>body{margin:0;overflow:hidden;background:#000;}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script></head><body>
+<div style="position:fixed;top:30px;left:30px;z-index:999;font-family:'Inter',sans-serif;">
+    <a href="../index.html" style="color:white;text-decoration:none;border:1px solid rgba(255,255,255,0.3);padding:12px 25px;border-radius:30px;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);font-size:0.9rem;transition:0.3s;">
+    ← Back to Hub
+    </a>
+</div>
+<script>
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.02);
+    const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({antialias:true});
+    renderer.setSize(innerWidth, innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const geo = new THREE.IcosahedronGeometry(10, 1);
+    const mat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.1, metalness: 0.8, flatShading: true });
+    const mesh = new THREE.Mesh(geo, mat);
+    scene.add(mesh);
+
+    const wireGeo = new THREE.WireframeGeometry(geo);
+    const wireMat = new THREE.LineBasicMaterial({ color: 0x00f260 });
+    const wire = new THREE.LineSegments(wireGeo, wireMat);
+    mesh.add(wire);
+
+    const l1 = new THREE.PointLight(0x00f260, 2, 50); l1.position.set(10,10,10); scene.add(l1);
+    const l2 = new THREE.PointLight(0x0575e6, 2, 50); l2.position.set(-10,-10,10); scene.add(l2);
+    
+    camera.position.z = 25;
+
+    function animate() {
+        requestAnimationFrame(animate);
+        mesh.rotation.x += 0.003; mesh.rotation.y += 0.005;
+        renderer.render(scene, camera);
+    }
+    animate();
+    window.onresize=()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);};
+</script></body></html>
