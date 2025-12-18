@@ -5,236 +5,222 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anas Alhaj — Principal Engineer</title>
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#050505">
+    <meta name="description" content="Principal Graphics Engineer. High-Performance WebGL Systems.">
     <link rel="manifest" href="manifest.json">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Oswald:wght@500;700&display=optional" rel="stylesheet">
+    
     <style>
-        :root { --bg: #050505; --text: #e0e0e0; --dim: #555; --accent: #00f260; --warn: #f2c000; --danger: #ff0055; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, monospace; overflow-x: hidden; }
-
-        /* Canvas Layer */
-        #webgl { position: fixed; inset: 0; z-index: -1; opacity: 0; transition: opacity 1s; }
-
-        /* PERFORMANCE HUD (The Professional Indicator) */
-        .debug-hud {
-            position: fixed; top: 20px; right: 20px; width: 220px;
-            background: rgba(0,0,0,0.85); border: 1px solid #333;
-            padding: 15px; font-family: 'Courier New', monospace; font-size: 10px;
-            color: #ccc; z-index: 1000; backdrop-filter: blur(5px);
-            display: flex; flex-direction: column; gap: 8px;
-            pointer-events: none; /* Click through */
+        /* CRITICAL CSS INLINED */
+        :root {
+            --bg: #050505;
+            --text-main: #e6e6e6;
+            --text-dim: #666;
+            --accent: #fff;
+            --border: rgba(255,255,255,0.08);
+            --grid-color: rgba(255,255,255,0.03);
         }
-        .hud-row { display: flex; justify-content: space-between; border-bottom: 1px solid #222; padding-bottom: 2px; }
-        .hud-val { color: var(--accent); font-weight: bold; }
-        .hud-val.warn { color: var(--warn); }
-        .hud-val.crit { color: var(--danger); }
 
-        /* Main UI */
-        nav { position: fixed; top: 0; left: 0; padding: 30px; z-index: 10; font-weight: bold; letter-spacing: 2px; }
-        
-        header { height: 100vh; padding: 0 5%; display: flex; flex-direction: column; justify-content: center; max-width: 1400px; margin: 0 auto; }
-        .role { color: var(--dim); letter-spacing: 4px; font-size: 0.7rem; margin-bottom: 20px; }
-        h1 { font-size: clamp(3rem, 10vw, 8rem); line-height: 0.9; text-transform: uppercase; margin-bottom: 40px; }
-        
-        /* Layout Optimization */
-        #work { content-visibility: auto; contain-intrinsic-size: 1000px; padding: 100px 5%; max-width: 1400px; margin: 0 auto; }
-        .row { display: flex; justify-content: space-between; padding: 30px 0; border-bottom: 1px solid #222; text-decoration: none; color: inherit; transition: 0.2s; align-items: center; }
-        .row:hover { padding-left: 20px; border-color: #666; background: rgba(255,255,255,0.03); }
-        .row h2 { font-size: 1.5rem; text-transform: uppercase; font-weight: 400; }
+        /* Reset & Base */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { height: 100%; font-size: 16px; }
+        body { 
+            background-color: var(--bg); color: var(--text-main); 
+            font-family: 'Inter', -apple-system, system-ui, sans-serif; 
+            overflow-x: hidden; -webkit-font-smoothing: antialiased;
+        }
 
-        footer { padding: 60px 5%; color: var(--dim); border-top: 1px solid #222; font-size: 0.8rem; }
+        /* 3. Performance: CSS-Only Grid (No Network Request) */
+        .grid-bg {
+            position: fixed; inset: 0; z-index: -2; pointer-events: none;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            /* Force GPU layer */
+            transform: translateZ(0); will-change: transform;
+        }
+
+        /* WebGL Canvas */
+        #webgl { position: fixed; inset: 0; z-index: -1; opacity: 0; transition: opacity 1.2s ease-out; }
+
+        /* Layout */
+        nav { 
+            position: fixed; top: 0; width: 100%; padding: 30px 40px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 10; font-weight: 500; letter-spacing: 0.5px;
+        }
+        .brand { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 1.1rem; }
+        
+        /* Minimalist Status Pill */
+        .status { 
+            font-size: 0.75rem; color: var(--text-dim); border: 1px solid var(--border);
+            padding: 6px 12px; border-radius: 50px; display: flex; align-items: center; gap: 8px;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+        }
+        .dot { width: 6px; height: 6px; background: #444; border-radius: 50%; transition: 0.3s; }
+        .dot.active { background: #00f260; box-shadow: 0 0 6px #00f260; }
+
+        header { 
+            min-height: 90vh; display: flex; flex-direction: column; justify-content: center; 
+            padding: 0 5%; max-width: 1400px; margin: 0 auto;
+            /* Layout Containment for rendering speed */
+            contain: layout;
+        }
+        
+        .role { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 24px; display:block; }
+        h1 { 
+            font-family: 'Oswald', sans-serif; font-size: clamp(3.5rem, 10vw, 8rem); 
+            line-height: 0.95; text-transform: uppercase; color: var(--text-main); margin-bottom: 40px;
+        }
+
+        /* Performance: 'content-visibility' skips rendering off-screen content */
+        section, footer { content-visibility: auto; contain-intrinsic-size: 600px; }
+
+        #work { padding: 80px 5%; max-width: 1400px; margin: 0 auto; border-top: 1px solid var(--border); }
+        
+        .project { 
+            display: flex; justify-content: space-between; align-items: center; padding: 32px 0; 
+            border-bottom: 1px solid var(--border); text-decoration: none; color: inherit; 
+            transition: background 0.2s ease;
+        }
+        .project:hover { background: rgba(255,255,255,0.03); padding-left: 15px; }
+        .project h2 { font-family: 'Oswald', sans-serif; font-size: 1.8rem; font-weight: 400; text-transform: uppercase; }
+        .meta { font-family: monospace; font-size: 0.8rem; color: var(--text-dim); }
+
+        footer { padding: 60px 5%; font-size: 0.85rem; color: var(--text-dim); text-align: center; }
+
+        /* Utility */
+        .fade-in { animation: fadeIn 0.8s ease forwards; opacity: 0; }
+        @keyframes fadeIn { to { opacity: 1; } }
     </style>
-
+    
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
+    <div class="grid-bg"></div>
     <canvas id="webgl"></canvas>
 
-    <div class="debug-hud">
-        <div class="hud-row"><span>ENGINE</span><span class="hud-val">ANAS.RENDERER</span></div>
-        <div class="hud-row"><span>FPS</span><span class="hud-val" id="hud-fps">--</span></div>
-        <div class="hud-row"><span>GPU TIER</span><span class="hud-val" id="hud-tier">DETECTING...</span></div>
-        <div class="hud-row"><span>RES SCALE</span><span class="hud-val" id="hud-res">1.0x</span></div>
-        <div class="hud-row"><span>MEMORY</span><span class="hud-val" id="hud-mem">--</span></div>
-        <div class="hud-row"><span>STATUS</span><span class="hud-val" id="hud-status">INIT</span></div>
-    </div>
+    <nav class="fade-in" style="animation-delay: 0.1s">
+        <div class="brand">Anas Alhaj</div>
+        <div class="status">
+            <div class="dot" id="sys-dot"></div>
+            <span id="sys-text">Loading Core...</span>
+        </div>
+    </nav>
 
-    <nav>ANAS ALHAJ</nav>
-
-    <header>
-        <div class="role">PRINCIPAL ENGINEER</div>
-        <h1>HARDWARE<br>AWARE<br>SYSTEMS</h1>
+    <header class="fade-in" style="animation-delay: 0.2s">
+        <span class="role">Principal Engineer</span>
+        <h1>Visual<br>Systems<br>Architect</h1>
     </header>
 
-    <section id="work">
-        <div style="border-bottom: 1px solid #fff; margin-bottom: 40px; padding-bottom: 10px;"><h2>MODULES</h2></div>
-        <a href="canvas/index.html" class="row"><span>01</span><h2>Chaos Engine</h2><span>JS</span></a>
-        <a href="threejs/index.html" class="row"><span>02</span><h2>Spatial Web</h2><span>3D</span></a>
-        <a href="matterjs/index.html" class="row"><span>03</span><h2>Dynamics</h2><span>PHY</span></a>
-        <a href="pixijs/index.html" class="row"><span>04</span><h2>Stress Test</h2><span>GPU</span></a>
-        <a href="webgl/index.html" class="row"><span>05</span><h2>Shader Core</h2><span>GLSL</span></a>
+    <section id="work" class="fade-in" style="animation-delay: 0.4s">
+        <a href="canvas/index.html" class="project"><h2>Chaos Engine</h2><span class="meta">VANILLA JS</span></a>
+        <a href="threejs/index.html" class="project"><h2>Spatial Web</h2><span class="meta">THREE.JS</span></a>
+        <a href="matterjs/index.html" class="project"><h2>Dynamics Lab</h2><span class="meta">MATTER.JS</span></a>
+        <a href="pixijs/index.html" class="project"><h2>Stress Unit</h2><span class="meta">PIXI.JS</span></a>
+        <a href="webgl/index.html" class="project"><h2>Shader Core</h2><span class="meta">GLSL</span></a>
     </section>
 
-    <footer>
-        SYSTEM: ONLINE • LATENCY: < 16ms
-    </footer>
+    <footer>© 2025 ANAS ALHAJ. PERFORMANCE FIRST.</footer>
 
     <script>
-        // --- ENGINEERING CORE: DYNAMIC RESOLUTION SCALING (DRS) ---
+        // --- ZENITH PERFORMANCE ENGINE ---
         
-        const System = {
-            config: {
-                targetFPS: 60,
-                minRes: 0.5,
-                maxRes: 2.0, // Retina
-                checkInterval: 1000 // Check performance every second
-            },
-            state: {
-                fps: 60,
-                currentRes: 1.0,
-                frameCount: 0,
-                lastTime: performance.now(),
-                isLowPower: false
-            },
+        const Engine = {
+            config: { maxPixelRatio: 1.5 }, // Cap at 1.5x for massive battery saving
             refs: {
-                fps: document.getElementById('hud-fps'),
-                res: document.getElementById('hud-res'),
-                mem: document.getElementById('hud-mem'),
-                tier: document.getElementById('hud-tier'),
-                status: document.getElementById('hud-status')
+                canvas: document.getElementById('webgl'),
+                dot: document.getElementById('sys-dot'),
+                text: document.getElementById('sys-text')
+            },
+            
+            init: function() {
+                if (typeof THREE === 'undefined') {
+                    // Smart polling (better than fixed timeout)
+                    requestAnimationFrame(Engine.init);
+                    return;
+                }
+                
+                // Update Status
+                this.refs.text.innerText = "System Online";
+                this.refs.dot.classList.add('active');
+
+                // Renderer Setup
+                const renderer = new THREE.WebGLRenderer({ 
+                    canvas: this.refs.canvas, 
+                    alpha: true, 
+                    antialias: false, 
+                    powerPreference: "high-performance",
+                    precision: "mediump" // Lower precision for speed
+                });
+                
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.config.maxPixelRatio));
+
+                // Scene
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 20;
+
+                // Ultra-Lightweight Geometry (Single Buffer)
+                const geometry = new THREE.BufferGeometry();
+                const count = 800; // Minimalist count
+                const pos = new Float32Array(count * 3);
+                for(let i=0; i<count*3; i++) pos[i] = (Math.random()-0.5) * 50;
+                geometry.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                
+                const material = new THREE.PointsMaterial({ size: 0.1, color: 0x666666 });
+                const mesh = new THREE.Points(geometry, material);
+                scene.add(mesh);
+
+                // Interaction
+                let mx = 0, my = 0;
+                window.addEventListener('mousemove', e => {
+                    mx = (e.clientX / window.innerWidth - 0.5) * 2;
+                    my = (e.clientY / window.innerHeight - 0.5) * 2;
+                }, { passive: true }); // Passive listener prevents scroll blocking
+
+                // Loop
+                const animate = () => {
+                    // Visibility Check (Stop render if tab hidden)
+                    if (!document.hidden) {
+                        mesh.rotation.y += 0.001;
+                        mesh.rotation.x += (my * 0.2 - mesh.rotation.x) * 0.05;
+                        mesh.rotation.y += (mx * 0.2 - mesh.rotation.y) * 0.05;
+                        renderer.render(scene, camera);
+                    }
+                    requestAnimationFrame(animate);
+                };
+                animate();
+
+                // Fade In Canvas (Smooth transition)
+                this.refs.canvas.style.opacity = 0.6;
+
+                // Passive Resize
+                let resizeTimer;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(() => {
+                        camera.aspect = window.innerWidth / window.innerHeight;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(window.innerWidth, window.innerHeight);
+                    }, 100);
+                }, { passive: true });
             }
         };
 
-        // 1. Hardware Detection
-        async function detectHardware() {
-            // Battery Check
-            if (navigator.getBattery) {
-                const battery = await navigator.getBattery();
-                if (battery.saveMode || battery.level < 0.2) {
-                    System.state.isLowPower = true;
-                    System.config.maxRes = 1.0; // Cap resolution on low battery
-                    System.refs.status.innerText = "ECONOMY MODE";
-                    System.refs.status.className = "hud-val warn";
-                }
-            }
-
-            // GPU Tier Estimation (Simple heuristic)
-            const gl = document.createElement('canvas').getContext('webgl');
-            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-            const renderer = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Unknown';
-            
-            if (renderer.includes('NVIDIA') || renderer.includes('Radeon')) {
-                System.refs.tier.innerText = "HIGH PERF (DEDICATED)";
-            } else if (renderer.includes('Intel') || renderer.includes('Apple')) {
-                System.refs.tier.innerText = "INTEGRATED";
-                System.config.maxRes = 1.5; // Cap for integrated
-            } else {
-                System.refs.tier.innerText = "MOBILE / GENERIC";
-                System.config.maxRes = 1.0;
-            }
+        // Use requestIdleCallback to load 3D only when CPU is free
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(Engine.init, { timeout: 2000 });
+        } else {
+            window.addEventListener('load', Engine.init);
         }
-
-        // 2. The Engine
-        const init = () => {
-            if (typeof THREE === 'undefined') { setTimeout(init, 50); return; }
-            
-            detectHardware();
-
-            const canvas = document.getElementById('webgl');
-            const renderer = new THREE.WebGLRenderer({ 
-                canvas, alpha: true, antialias: false, // Antialias OFF for pure performance
-                powerPreference: "high-performance" 
-            });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(System.state.currentRes);
-
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-            camera.position.z = 25;
-
-            // Geometry: Tech Cloud
-            const geo = new THREE.BufferGeometry();
-            const count = 1500;
-            const pos = new Float32Array(count*3);
-            for(let i=0; i<count*3; i++) pos[i] = (Math.random()-0.5)*60;
-            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-            const mat = new THREE.PointsMaterial({ size: 0.08, color: 0x666666, transparent: true, opacity: 0.6 });
-            const mesh = new THREE.Points(geo, mat);
-            scene.add(mesh);
-
-            // Passive Inputs
-            let mx=0, my=0;
-            window.addEventListener('mousemove', e => { mx=(e.clientX/innerWidth-0.5)*2; my=(e.clientY/innerHeight-0.5)*2; }, {passive:true});
-
-            // 3. Render Loop with DRS Logic
-            const animate = () => {
-                requestAnimationFrame(animate);
-
-                // Logic
-                mesh.rotation.y += 0.001;
-                mesh.rotation.x += (my*0.3 - mesh.rotation.x)*0.05;
-                mesh.rotation.y += (mx*0.3 - mesh.rotation.y)*0.05;
-
-                renderer.render(scene, camera);
-
-                // Performance Monitoring
-                System.state.frameCount++;
-                const now = performance.now();
-                if (now - System.state.lastTime >= 1000) {
-                    System.state.fps = System.state.frameCount;
-                    System.refs.fps.innerText = System.state.fps;
-                    
-                    // --- THE DRS ALGORITHM ---
-                    // If FPS drops below 45, lower resolution
-                    if (System.state.fps < 45 && System.state.currentRes > System.config.minRes) {
-                        System.state.currentRes -= 0.1;
-                        renderer.setPixelRatio(System.state.currentRes);
-                        System.refs.res.className = "hud-val warn";
-                    } 
-                    // If FPS is stable 60, try increasing resolution (up to limit)
-                    else if (System.state.fps >= 58 && System.state.currentRes < System.config.maxRes) {
-                        System.state.currentRes += 0.1;
-                        renderer.setPixelRatio(System.state.currentRes);
-                        System.refs.res.className = "hud-val";
-                    }
-                    
-                    System.refs.res.innerText = System.state.currentRes.toFixed(1) + "x";
-
-                    // Memory Monitor (Chrome only)
-                    if (performance.memory) {
-                        const used = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
-                        System.refs.mem.innerText = used + " MB";
-                    }
-
-                    System.state.frameCount = 0;
-                    System.state.lastTime = now;
-                }
-            };
-            
-            canvas.style.opacity = 1;
-            animate();
-            
-            // Efficient Resize
-            let resizeTimeout;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    camera.aspect = window.innerWidth/window.innerHeight;
-                    camera.updateProjectionMatrix();
-                    renderer.setSize(window.innerWidth, window.innerHeight);
-                }, 100);
-            }, {passive:true});
-        };
-
-        // Smart Load
-        if ('requestIdleCallback' in window) requestIdleCallback(() => setTimeout(init, 100));
-        else window.addEventListener('load', init);
-
     </script>
 </body>
 </html>
