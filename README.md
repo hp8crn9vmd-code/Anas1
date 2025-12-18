@@ -1,31 +1,40 @@
 
-# Anas Alhaj | Graphics Engineering Portfolio
+# ANAS ALHAJ | GRAPHICS ENGINEERING SYSTEMS
 
-![Tech Stack](https://img.shields.io/badge/Tech-WebGL%20%7C%20Three.js%20%7C%20Canvas-00f260?style=for-the-badge&logo=opengl)
-![Status](https://img.shields.io/badge/Status-Production-blue?style=for-the-badge)
+![Build Status](https://img.shields.io/badge/build-passing-success?style=for-the-badge&logo=github)
+![Tech Stack](https://img.shields.io/badge/stack-WebGL%20%7C%20Three.js%20%7C%20GLSL-blue?style=for-the-badge)
+![Performance](https://img.shields.io/badge/performance-60fps-green?style=for-the-badge)
 
-A showcase of high-performance web graphics and physics simulations, demonstrating proficiency in modern rendering technologies.
+> **"Bridging the gap between creative design and high-performance engineering."**
 
-## 🚀 Live Demo
-**[Launch Portfolio](https://hp8crn9vmd-code.github.io/anas1/)**
+## 📂 SYSTEM OVERVIEW
 
-## 🛠️ Technology Stack
+This repository hosts a collection of high-performance interactive graphics modules. Each module is engineered to test specific rendering capabilities, physics simulations, and mathematical visual generation directly in the browser.
 
-| Technology | Type | Usage Description |
-|------------|------|-------------------|
-| **Three.js** | 3D Engine | Complex geometry rendering, lighting, and camera management. |
-| **Pixi.js** | 2D WebGL | High-speed sprite rendering (500+ elements at 60FPS). |
-| **Matter.js** | Physics | Rigid body dynamics, collisions, and gravity simulation. |
-| **Vanilla JS** | Canvas API | Custom physics logic (Gather/Scatter algorithms) on CPU. |
-| **GLSL** | Shaders | Raw fragment shaders for mathematical visual generation on GPU. |
-
-## 📂 Project Structure
-
-- `/canvas` - Custom particle system written in vanilla JavaScript.
-- `/threejs` - 3D scene with dynamic lighting and materials.
-- `/matterjs` - Interactive physics playground.
-- `/pixijs` - Performance benchmark using WebGL 2D.
-- `/webgl` - Direct shader programming.
+| Module ID | System Name | Core Technology | Description |
+|-----------|-------------|-----------------|-------------|
+| **001** | [Canvas Engine](./canvas/) | `Vanilla JS` | CPU-based particle system with custom gather/scatter algorithms. |
+| **002** | [Spatial Web](./threejs/) | `Three.js` | Immersive 3D architecture featuring PBR materials and dynamic lighting. |
+| **003** | [Dynamics Lab](./matterjs/) | `Matter.js` | Rigid body physics engine with collision detection and restitution. |
+| **004** | [Render Stress](./pixijs/) | `Pixi.js` | High-throughput 2D rendering benchmark (5000+ entities). |
+| **005** | [Shader Core](./webgl/) | `WebGL / GLSL` | Native fragment shader programming for procedural art. |
 
 ---
-© 2025 Anas Alhaj. All Rights Reserved.
+
+## 🛠️ TECHNICAL ARCHITECTURE
+
+The portfolio is built using a **"Digital Blueprint"** design language, focusing on:
+
+* **Zero-Bloat UI:** Minimalist, data-driven interfaces.
+* **Performance First:** Optimized loops for consistent 60 FPS on standard hardware.
+* **Modular Codebase:** Each experiment is isolated for independent testing and scaling.
+
+## 🚀 DEPLOYMENT
+
+This system is automatically deployed via GitHub Pages.
+
+**[LAUNCH LIVE SYSTEM](https://hp8crn9vmd-code.github.io/anas1/)**
+
+---
+
+### © 2025 Anas Alhaj. Engineered in Jordan.
