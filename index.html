@@ -5,23 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anas Alhaj — Principal Engineer</title>
-    
-    <meta name="description" content="Principal Graphics Engineer specializing in High-Performance WebGL & Physics Systems.">
+    <meta name="description" content="Principal Graphics Engineer. High-Performance WebGL & Physics Systems.">
     <meta name="theme-color" content="#020202">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Oswald:wght@500;700&display=swap">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
+        /* CSS Containment for Rendering Performance */
         :root {
-            --bg: #020202; /* Premium Matte Black */
+            --bg: #020202;
             --text-main: #f0f0f0;
             --text-muted: #666666;
             --border: rgba(255, 255, 255, 0.06);
-            --accent: #ffffff;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,93 +30,74 @@
             background-color: var(--bg); color: var(--text-main);
             font-family: 'Inter', sans-serif; overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            /* تسريع التمرير */
+            overscroll-behavior-y: none;
         }
 
-        /* === 3D Data Cloud Background === */
+        /* 3D Canvas - Initially Hidden to prioritize Text */
         #webgl {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
+            z-index: -1; pointer-events: none; opacity: 0; transition: opacity 1s ease;
         }
 
-        /* === Navigation (Minimalist) === */
         nav {
             position: fixed; top: 0; width: 100%; padding: 30px 40px;
             display: flex; justify-content: space-between; align-items: center;
             z-index: 100; mix-blend-mode: exclusion;
         }
-        .brand { font-family: 'Oswald'; font-size: 1.1rem; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 700; }
+        .brand { font-family: 'Oswald'; font-size: 1.1rem; letter-spacing: 0.05em; font-weight: 700; }
         .nav-right { display: flex; gap: 30px; font-size: 0.85rem; color: #aaa; }
-        .nav-right a { color: inherit; text-decoration: none; transition: 0.3s; }
-        .nav-right a:hover { color: #fff; }
+        .nav-right a { color: inherit; text-decoration: none; }
 
-        /* === Hero Section === */
         header {
             height: 90vh; display: flex; flex-direction: column; justify-content: center;
             padding: 0 5%; max-width: 1600px; margin: 0 auto;
+            /* Performance: GPU Layer Promotion for static text */
+            will-change: transform; 
         }
 
-        .label {
-            font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; 
-            letter-spacing: 0.2em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
-        }
+        .label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         .label::before { content: ''; width: 40px; height: 1px; background: var(--text-muted); }
 
         h1 {
             font-family: 'Oswald', sans-serif; 
-            font-size: clamp(4rem, 11vw, 10rem); 
-            line-height: 0.9; text-transform: uppercase; letter-spacing: -0.02em;
+            font-size: clamp(4rem, 11vw, 10rem); line-height: 0.9; text-transform: uppercase; 
             margin-bottom: 40px; color: var(--text-main);
+            /* Font Optimization */
+            font-display: swap; 
         }
 
         .bio-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;
-            border-top: 1px solid var(--border); padding-top: 30px;
-            max-width: 1000px;
+            border-top: 1px solid var(--border); padding-top: 30px; max-width: 1000px;
         }
-        .bio-item h3 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 400; }
-        .bio-item p { font-size: 1rem; line-height: 1.5; }
+        .bio-item h3 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; }
 
-        @media (max-width: 768px) { .bio-grid { grid-template-columns: 1fr; } }
+        /* 3. Performance: Content Visibility (تجاهل رسم القسم السفلي حتى الوصول إليه) */
+        #work, footer {
+            content-visibility: auto;
+            contain-intrinsic-size: 1000px; /* تقدير الارتفاع لمنع القفز */
+        }
 
-        /* === Projects (The Ledger) === */
         #work { padding: 100px 5%; max-width: 1600px; margin: 0 auto; }
-        
-        .section-head { 
-            display: flex; justify-content: space-between; align-items: flex-end; 
-            margin-bottom: 60px; border-bottom: 1px solid var(--text-main); padding-bottom: 20px;
-        }
+        .section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; border-bottom: 1px solid var(--text-main); padding-bottom: 20px; }
         .section-head h2 { font-family: 'Oswald'; font-size: 2rem; text-transform: uppercase; }
-        
-        .project-list { display: flex; flex-direction: column; }
-        
+
         .project-row {
             display: grid; grid-template-columns: 0.5fr 2fr 1fr 0.5fr;
             padding: 35px 0; border-bottom: 1px solid var(--border);
-            text-decoration: none; color: inherit; align-items: center;
-            transition: all 0.3s ease; position: relative;
+            text-decoration: none; color: inherit; align-items: center; transition: all 0.2s ease;
         }
-        
         .project-row:hover { padding-left: 20px; border-color: rgba(255,255,255,0.3); }
-        .project-row:hover .p-title { color: #fff; }
-        .project-row:hover .arrow { transform: translateX(0); opacity: 1; }
-
-        .p-index { font-size: 0.85rem; color: var(--text-muted); font-family: 'Inter'; }
-        .p-title { font-family: 'Oswald'; font-size: 2.5rem; color: #ccc; transition: 0.3s; text-transform: uppercase; }
+        .p-title { font-family: 'Oswald'; font-size: 2.5rem; color: #ccc; text-transform: uppercase; }
         .p-tech { font-size: 0.85rem; color: var(--text-muted); text-align: right; }
-        .arrow { opacity: 0; transform: translateX(-20px); transition: 0.3s; text-align: right; font-size: 1.5rem; }
 
         @media (max-width: 900px) {
             .project-row { grid-template-columns: 1fr; gap: 10px; }
-            .p-index, .p-tech, .arrow { display: none; }
-            .p-title { font-size: 1.8rem; }
+            .p-tech, .p-index { display: none; }
         }
 
-        /* === Footer === */
-        footer {
-            padding: 80px 5%; border-top: 1px solid var(--border);
-            display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.9rem;
-        }
-        .email-link { color: var(--text-main); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+        footer { padding: 80px 5%; border-top: 1px solid var(--border); display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -126,9 +107,8 @@
     <nav>
         <div class="brand">ANAS ALHAJ ®</div>
         <div class="nav-right">
-            <span>AMMAN, JO</span>
-            <span>::</span>
-            <a href="mailto:contact@anas.com">AVAILABLE FOR HIRE</a>
+            <span>AMMAN</span>
+            <a href="mailto:contact@anas.com">HIRE</a>
         </div>
     </nav>
 
@@ -137,143 +117,104 @@
         <h1>Engineering<br>Visual<br>Reality</h1>
         
         <div class="bio-grid">
-            <div class="bio-item">
-                <h3>FOCUS</h3>
-                <p>High-Performance WebGL, Physics Engines, and Interactive Systems.</p>
-            </div>
-            <div class="bio-item">
-                <h3>METHOD</h3>
-                <p>Combining mathematical precision with organic user experience design.</p>
-            </div>
-            <div class="bio-item">
-                <h3>STACK</h3>
-                <p>Three.js, GLSL, Matter.js, Pixi.js, Vanilla JavaScript.</p>
-            </div>
+            <div class="bio-item"><h3>FOCUS</h3><p>High-Performance WebGL & Physics.</p></div>
+            <div class="bio-item"><h3>METHOD</h3><p>Precision Engineering & Math.</p></div>
+            <div class="bio-item"><h3>STACK</h3><p>Three.js, GLSL, C++.</p></div>
         </div>
     </header>
 
     <section id="work">
         <div class="section-head">
             <h2>Selected Works</h2>
-            <span>(2024 — 2025)</span>
+            <span>(2025)</span>
         </div>
-
         <div class="project-list">
-            <a href="canvas/index.html" class="project-row">
-                <span class="p-index">01 / 05</span>
-                <span class="p-title">Chaos Engine</span>
-                <span class="p-tech">VANILLA JS / PHYSICS</span>
-                <span class="arrow">→</span>
-            </a>
-            
-            <a href="threejs/index.html" class="project-row">
-                <span class="p-index">02 / 05</span>
-                <span class="p-title">Spatial Web</span>
-                <span class="p-tech">THREE.JS / WEBGL</span>
-                <span class="arrow">→</span>
-            </a>
-            
-            <a href="matterjs/index.html" class="project-row">
-                <span class="p-index">03 / 05</span>
-                <span class="p-title">Dynamics Lab</span>
-                <span class="p-tech">MATTER.JS / CAD</span>
-                <span class="arrow">→</span>
-            </a>
-            
-            <a href="pixijs/index.html" class="project-row">
-                <span class="p-index">04 / 05</span>
-                <span class="p-title">Stress Test</span>
-                <span class="p-tech">PIXI.JS / BENCHMARK</span>
-                <span class="arrow">→</span>
-            </a>
-            
-            <a href="webgl/index.html" class="project-row">
-                <span class="p-index">05 / 05</span>
-                <span class="p-title">Shader Core</span>
-                <span class="p-tech">GLSL / NATIVE</span>
-                <span class="arrow">→</span>
-            </a>
+            <a href="canvas/index.html" class="project-row"><span class="p-index">01</span><span class="p-title">Chaos Engine</span><span class="p-tech">VANILLA JS</span></a>
+            <a href="threejs/index.html" class="project-row"><span class="p-index">02</span><span class="p-title">Spatial Web</span><span class="p-tech">THREE.JS</span></a>
+            <a href="matterjs/index.html" class="project-row"><span class="p-index">03</span><span class="p-title">Dynamics Lab</span><span class="p-tech">MATTER.JS</span></a>
+            <a href="pixijs/index.html" class="project-row"><span class="p-index">04</span><span class="p-title">Stress Test</span><span class="p-tech">PIXI.JS</span></a>
+            <a href="webgl/index.html" class="project-row"><span class="p-index">05</span><span class="p-title">Shader Core</span><span class="p-tech">GLSL</span></a>
         </div>
     </section>
 
     <footer>
-        <div>© 2025 ANAS ALHAJ. ALL RIGHTS RESERVED.</div>
-        <a href="mailto:contact@anas.com" class="email-link">Get in touch</a>
+        <div>© 2025 ANAS ALHAJ.</div>
     </footer>
 
     <script>
-        // === The Executive Background: Data Cloud ===
-        window.addEventListener('load', () => {
+        // 4. Extreme Optimization: Idle Hydration Pattern
+        // هذا الكود يضمن أن المتصفح قد انتهى من رسم النصوص تماماً قبل تحميل الـ 3D
+        
+        const init3D = () => {
+            if (typeof THREE === 'undefined') {
+                // إذا لم يتم تحميل المكتبة بعد، حاول مرة أخرى بعد قليل
+                setTimeout(init3D, 100);
+                return;
+            }
+
+            const canvas = document.getElementById('webgl');
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl'), alpha: true, antialias: true, powerPreference: "high-performance" });
             
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-            // Create a cloud of points
-            const geometry = new THREE.BufferGeometry();
-            const count = 2000;
-            const posArray = new Float32Array(count * 3);
-            
-            for(let i = 0; i < count * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 40; // Spread wide
-            }
-            
-            geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            
-            const material = new THREE.PointsMaterial({
-                size: 0.04,
-                color: 0x444444, // Subtle Grey
-                transparent: true,
-                opacity: 0.6,
+            // Power Preference: يسمح للمتصفح بتقليل الجودة على البطاريات الضعيفة
+            const renderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, alpha: true, antialias: false, powerPreference: "high-performance" 
             });
             
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            // Cap Pixel Ratio to 2 to save battery on Retina screens
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Optimized Geometry (BufferGeometry)
+            const geometry = new THREE.BufferGeometry();
+            const count = 1500;
+            const posArray = new Float32Array(count * 3);
+            for(let i=0; i<count*3; i++) posArray[i] = (Math.random()-0.5)*40;
+            geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            const material = new THREE.PointsMaterial({ size: 0.05, color: 0x555555, transparent: true, opacity: 0.5 });
             const particles = new THREE.Points(geometry, material);
             scene.add(particles);
 
             camera.position.z = 15;
 
-            // Interactive Wave Effect
-            let mouseX = 0; let mouseY = 0;
-            let targetX = 0; let targetY = 0;
-
+            // Passive Event Listener (Better Scroll Performance)
+            let mouseX = 0, mouseY = 0;
             document.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX / window.innerWidth - 0.5;
                 mouseY = e.clientY / window.innerHeight - 0.5;
             }, { passive: true });
 
-            const clock = new THREE.Clock();
-
-            function animate() {
+            const animate = () => {
                 requestAnimationFrame(animate);
-                const time = clock.getElapsedTime();
-
-                // Smooth Camera Follow
-                targetX = mouseX * 2;
-                targetY = mouseY * 2;
-                particles.rotation.y += 0.05 * (targetX - particles.rotation.y);
-                particles.rotation.x += 0.05 * (targetY - particles.rotation.x);
-
-                // Organic "Breathing" Motion
-                const positions = geometry.attributes.position.array;
-                for(let i=0; i<count; i++) {
-                    const i3 = i*3;
-                    // Sine wave based on position and time
-                    positions[i3+1] += Math.sin(time + positions[i3]) * 0.002;
-                }
-                geometry.attributes.position.needsUpdate = true;
-
+                particles.rotation.y += 0.001;
+                particles.rotation.x += (mouseY * 0.5 - particles.rotation.x) * 0.05;
+                particles.rotation.y += (mouseX * 0.5 - particles.rotation.y) * 0.05;
                 renderer.render(scene, camera);
-            }
+            };
             animate();
 
+            // Show Canvas ONLY after initialization is complete
+            canvas.style.opacity = 0.8; 
+            
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             }, { passive: true });
-        });
+        };
+
+        // 5. The Magic Trigger: استخدم requestIdleCallback
+        // هذا الأمر يخبر المتصفح: "لا تشغل الـ 3D إلا عندما تكون مرتاحاً"
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+                // ننتظر قليلاً للتأكد من أن الخطوط ظهرت
+                setTimeout(init3D, 200);
+            });
+        } else {
+            // Fallback للمتصفحات القديمة
+            window.addEventListener('load', init3D);
+        }
     </script>
 </body>
 </html>
