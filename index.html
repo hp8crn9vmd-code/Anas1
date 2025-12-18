@@ -5,222 +5,194 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anas Alhaj — Principal Engineer</title>
-    <meta name="theme-color" content="#050505">
-    <meta name="description" content="Principal Graphics Engineer. High-Performance WebGL Systems.">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Principal Graphics Engineer.">
     <link rel="manifest" href="manifest.json">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Oswald:wght@500;700&display=optional" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
-        /* CRITICAL CSS INLINED */
+        /* CRITICAL CSS */
         :root {
             --bg: #050505;
-            --text-main: #e6e6e6;
-            --text-dim: #666;
+            --text: #e0e0e0;
+            --dim: #555;
             --accent: #fff;
-            --border: rgba(255,255,255,0.08);
-            --grid-color: rgba(255,255,255,0.03);
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
         }
 
-        /* Reset & Base */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { height: 100%; font-size: 16px; }
+        
         body { 
-            background-color: var(--bg); color: var(--text-main); 
-            font-family: 'Inter', -apple-system, system-ui, sans-serif; 
-            overflow-x: hidden; -webkit-font-smoothing: antialiased;
+            background: var(--bg); color: var(--text); 
+            font-family: var(--sans); overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* 3. Performance: CSS-Only Grid (No Network Request) */
-        .grid-bg {
-            position: fixed; inset: 0; z-index: -2; pointer-events: none;
-            background-image: 
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 40px 40px;
-            /* Force GPU layer */
-            transform: translateZ(0); will-change: transform;
-        }
+        /* GPU Layers for smooth composite */
+        nav, header, section, footer { transform: translateZ(0); }
 
-        /* WebGL Canvas */
-        #webgl { position: fixed; inset: 0; z-index: -1; opacity: 0; transition: opacity 1.2s ease-out; }
+        /* Canvas: Lower z-index */
+        #webgl { position: fixed; inset: 0; z-index: -1; opacity: 0; transition: opacity 1s ease; }
 
-        /* Layout */
+        /* Navigation */
         nav { 
-            position: fixed; top: 0; width: 100%; padding: 30px 40px; 
+            position: fixed; top: 0; width: 100%; padding: 25px 40px; 
             display: flex; justify-content: space-between; align-items: center; 
-            z-index: 10; font-weight: 500; letter-spacing: 0.5px;
+            z-index: 10; font-family: var(--mono); font-size: 0.8rem;
         }
-        .brand { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 1.1rem; }
-        
-        /* Minimalist Status Pill */
-        .status { 
-            font-size: 0.75rem; color: var(--text-dim); border: 1px solid var(--border);
-            padding: 6px 12px; border-radius: 50px; display: flex; align-items: center; gap: 8px;
-            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+        .status-badge { 
+            background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 4px; 
+            border: 1px solid #222; display: flex; gap: 8px; align-items: center;
         }
-        .dot { width: 6px; height: 6px; background: #444; border-radius: 50%; transition: 0.3s; }
-        .dot.active { background: #00f260; box-shadow: 0 0 6px #00f260; }
+        .indicator { width: 6px; height: 6px; background: #00f260; border-radius: 50%; box-shadow: 0 0 5px #00f260; }
 
+        /* Header */
         header { 
-            min-height: 90vh; display: flex; flex-direction: column; justify-content: center; 
+            min-height: 85vh; display: flex; flex-direction: column; justify-content: center; 
             padding: 0 5%; max-width: 1400px; margin: 0 auto;
-            /* Layout Containment for rendering speed */
-            contain: layout;
         }
-        
-        .role { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 24px; display:block; }
+        .tag { font-family: var(--mono); color: var(--dim); font-size: 0.75rem; margin-bottom: 20px; }
         h1 { 
-            font-family: 'Oswald', sans-serif; font-size: clamp(3.5rem, 10vw, 8rem); 
-            line-height: 0.95; text-transform: uppercase; color: var(--text-main); margin-bottom: 40px;
+            font-size: clamp(3.5rem, 9vw, 8rem); line-height: 1; font-weight: 600; 
+            letter-spacing: -2px; color: var(--accent); margin-bottom: 40px;
         }
 
-        /* Performance: 'content-visibility' skips rendering off-screen content */
-        section, footer { content-visibility: auto; contain-intrinsic-size: 600px; }
-
-        #work { padding: 80px 5%; max-width: 1400px; margin: 0 auto; border-top: 1px solid var(--border); }
+        /* Performance: CSS Containment */
+        #work { content-visibility: auto; contain-intrinsic-size: 800px; padding: 100px 5%; max-width: 1400px; margin: 0 auto; border-top: 1px solid #111; }
         
-        .project { 
-            display: flex; justify-content: space-between; align-items: center; padding: 32px 0; 
-            border-bottom: 1px solid var(--border); text-decoration: none; color: inherit; 
-            transition: background 0.2s ease;
+        .row { 
+            display: flex; justify-content: space-between; align-items: center; padding: 30px 0; 
+            border-bottom: 1px solid #111; text-decoration: none; color: inherit; 
+            transition: background 0.15s; cursor: pointer;
         }
-        .project:hover { background: rgba(255,255,255,0.03); padding-left: 15px; }
-        .project h2 { font-family: 'Oswald', sans-serif; font-size: 1.8rem; font-weight: 400; text-transform: uppercase; }
-        .meta { font-family: monospace; font-size: 0.8rem; color: var(--text-dim); }
+        .row:hover { background: rgba(255,255,255,0.02); padding-left: 10px; }
+        .row h2 { font-size: 1.5rem; font-weight: 400; }
+        .row span { font-family: var(--mono); color: var(--dim); font-size: 0.8rem; }
 
-        footer { padding: 60px 5%; font-size: 0.85rem; color: var(--text-dim); text-align: center; }
-
-        /* Utility */
-        .fade-in { animation: fadeIn 0.8s ease forwards; opacity: 0; }
-        @keyframes fadeIn { to { opacity: 1; } }
+        /* Telemetry Footer */
+        footer { 
+            padding: 40px 5%; border-top: 1px solid #111; 
+            font-family: var(--mono); font-size: 0.75rem; color: var(--dim);
+            display: flex; justify-content: space-between;
+        }
     </style>
     
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-    <div class="grid-bg"></div>
     <canvas id="webgl"></canvas>
 
-    <nav class="fade-in" style="animation-delay: 0.1s">
-        <div class="brand">Anas Alhaj</div>
-        <div class="status">
-            <div class="dot" id="sys-dot"></div>
-            <span id="sys-text">Loading Core...</span>
+    <nav>
+        <div>ANAS.ALHAJ</div>
+        <div class="status-badge">
+            <div class="indicator"></div>
+            <span id="boot-time">INIT...</span>
         </div>
     </nav>
 
-    <header class="fade-in" style="animation-delay: 0.2s">
-        <span class="role">Principal Engineer</span>
-        <h1>Visual<br>Systems<br>Architect</h1>
+    <header>
+        <span class="tag">0x01 // PRINCIPAL_ENGINEER</span>
+        <h1>SYSTEMS<br>ARCHITECT</h1>
     </header>
 
-    <section id="work" class="fade-in" style="animation-delay: 0.4s">
-        <a href="canvas/index.html" class="project"><h2>Chaos Engine</h2><span class="meta">VANILLA JS</span></a>
-        <a href="threejs/index.html" class="project"><h2>Spatial Web</h2><span class="meta">THREE.JS</span></a>
-        <a href="matterjs/index.html" class="project"><h2>Dynamics Lab</h2><span class="meta">MATTER.JS</span></a>
-        <a href="pixijs/index.html" class="project"><h2>Stress Unit</h2><span class="meta">PIXI.JS</span></a>
-        <a href="webgl/index.html" class="project"><h2>Shader Core</h2><span class="meta">GLSL</span></a>
+    <section id="work">
+        <a href="canvas/index.html" class="row"><span>01</span><h2>Chaos Engine</h2><span>JS</span></a>
+        <a href="threejs/index.html" class="row"><span>02</span><h2>Spatial Web</h2><span>3D</span></a>
+        <a href="matterjs/index.html" class="row"><span>03</span><h2>Dynamics Lab</h2><span>PHY</span></a>
+        <a href="pixijs/index.html" class="row"><span>04</span><h2>Stress Unit</h2><span>GPU</span></a>
+        <a href="webgl/index.html" class="row"><span>05</span><h2>Shader Core</h2><span>GLSL</span></a>
     </section>
 
-    <footer>© 2025 ANAS ALHAJ. PERFORMANCE FIRST.</footer>
+    <footer>
+        <div id="telemetry">WAITING FOR METRICS...</div>
+        <div>© 2025</div>
+    </footer>
 
     <script>
-        // --- ZENITH PERFORMANCE ENGINE ---
-        
-        const Engine = {
-            config: { maxPixelRatio: 1.5 }, // Cap at 1.5x for massive battery saving
-            refs: {
-                canvas: document.getElementById('webgl'),
-                dot: document.getElementById('sys-dot'),
-                text: document.getElementById('sys-text')
-            },
-            
-            init: function() {
-                if (typeof THREE === 'undefined') {
-                    // Smart polling (better than fixed timeout)
-                    requestAnimationFrame(Engine.init);
-                    return;
-                }
-                
-                // Update Status
-                this.refs.text.innerText = "System Online";
-                this.refs.dot.classList.add('active');
+        // Start Timer
+        const startT = performance.now();
 
-                // Renderer Setup
-                const renderer = new THREE.WebGLRenderer({ 
-                    canvas: this.refs.canvas, 
-                    alpha: true, 
-                    antialias: false, 
-                    powerPreference: "high-performance",
-                    precision: "mediump" // Lower precision for speed
-                });
-                
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.config.maxPixelRatio));
-
-                // Scene
-                const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                camera.position.z = 20;
-
-                // Ultra-Lightweight Geometry (Single Buffer)
-                const geometry = new THREE.BufferGeometry();
-                const count = 800; // Minimalist count
-                const pos = new Float32Array(count * 3);
-                for(let i=0; i<count*3; i++) pos[i] = (Math.random()-0.5) * 50;
-                geometry.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-                
-                const material = new THREE.PointsMaterial({ size: 0.1, color: 0x666666 });
-                const mesh = new THREE.Points(geometry, material);
-                scene.add(mesh);
-
-                // Interaction
-                let mx = 0, my = 0;
-                window.addEventListener('mousemove', e => {
-                    mx = (e.clientX / window.innerWidth - 0.5) * 2;
-                    my = (e.clientY / window.innerHeight - 0.5) * 2;
-                }, { passive: true }); // Passive listener prevents scroll blocking
-
-                // Loop
-                const animate = () => {
-                    // Visibility Check (Stop render if tab hidden)
-                    if (!document.hidden) {
-                        mesh.rotation.y += 0.001;
-                        mesh.rotation.x += (my * 0.2 - mesh.rotation.x) * 0.05;
-                        mesh.rotation.y += (mx * 0.2 - mesh.rotation.y) * 0.05;
-                        renderer.render(scene, camera);
-                    }
-                    requestAnimationFrame(animate);
-                };
-                animate();
-
-                // Fade In Canvas (Smooth transition)
-                this.refs.canvas.style.opacity = 0.6;
-
-                // Passive Resize
-                let resizeTimer;
-                window.addEventListener('resize', () => {
-                    clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(() => {
-                        camera.aspect = window.innerWidth / window.innerHeight;
-                        camera.updateProjectionMatrix();
-                        renderer.setSize(window.innerWidth, window.innerHeight);
-                    }, 100);
-                }, { passive: true });
-            }
+        // 3. Telemetry System
+        const updateTelemetry = (fps) => {
+            const domT = Math.round(performance.now() - startT);
+            document.getElementById('telemetry').innerText = `DOM: ${domT}ms • RENDER: WEBGL2 • FPS: ${fps}`;
+            document.getElementById('boot-time').innerText = `READY IN ${domT}ms`;
         };
 
-        // Use requestIdleCallback to load 3D only when CPU is free
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(Engine.init, { timeout: 2000 });
-        } else {
-            window.addEventListener('load', Engine.init);
-        }
+        const init = () => {
+            if (typeof THREE === 'undefined') { requestAnimationFrame(init); return; }
+            
+            // Renderer Setup
+            const canvas = document.getElementById('webgl');
+            const renderer = new THREE.WebGLRenderer({ 
+                canvas, alpha: true, antialias: false, powerPreference: "high-performance", stencil: false, depth: false 
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+
+            // Scene
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+            camera.position.z = 20;
+
+            // Geometry (Raw Buffer for Speed)
+            const count = 1200;
+            const pos = new Float32Array(count * 3);
+            for(let i=0; i<count*3; i++) pos[i] = (Math.random()-0.5) * 60;
+            
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            const mat = new THREE.PointsMaterial({ size: 0.1, color: 0x444444 });
+            const mesh = new THREE.Points(geo, mat);
+            scene.add(mesh);
+
+            // Loop
+            let frame = 0;
+            let lastT = performance.now();
+            
+            const animate = () => {
+                requestAnimationFrame(animate);
+                
+                // Minimalist rotation
+                mesh.rotation.y += 0.001;
+                renderer.render(scene, camera);
+
+                // FPS Calc (Every 30 frames to save CPU)
+                frame++;
+                if (frame > 30) {
+                    const now = performance.now();
+                    const fps = Math.round(1000 / ((now - lastT) / 30));
+                    updateTelemetry(fps);
+                    lastT = now;
+                    frame = 0;
+                }
+            };
+            animate();
+            
+            canvas.style.opacity = 1;
+
+            // Resize (Debounced)
+            let resizeT;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeT);
+                resizeT = setTimeout(() => {
+                    camera.aspect = window.innerWidth/window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                }, 100);
+            }, {passive: true});
+        };
+
+        // Smart Hydration
+        if ('requestIdleCallback' in window) requestIdleCallback(init);
+        else window.addEventListener('load', init);
+
     </script>
 </body>
 </html>
