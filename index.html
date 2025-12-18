@@ -4,321 +4,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anas Alhaj | Graphics Engineer</title>
-    <meta name="description" content="High-performance WebGL and Physics Engineering Portfolio.">
+    <title>Anas Alhaj — Creative Technologist</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;500;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         :root {
-            /* Professional Dark Theme Palette */
             --bg: #050505;
-            --card-bg: rgba(255, 255, 255, 0.02);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --text-main: #ededed;
-            --text-muted: #888888;
-            --accent: #00f260; /* Subtle Neon Green for primary actions */
-            --spotlight: rgba(255, 255, 255, 0.15);
+            --text-main: #ffffff;
+            --text-muted: #666666;
+            --accent: #3b82f6; /* Electric Blue */
+            --border: rgba(255, 255, 255, 0.08);
+            --card-bg: rgba(20, 20, 20, 0.4);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; /* Custom Cursor */ }
+
         body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: 'Inter', -apple-system, sans-serif;
-            overflow-x: hidden;
+            background-color: var(--bg); color: var(--text-main);
+            font-family: 'Manrope', sans-serif; overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            line-height: 1.6;
         }
 
-        /* === 1. Navigation (Floating & Glass) === */
-        nav {
-            position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
-            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(12px);
-            border: 1px solid var(--card-border); padding: 12px 32px; border-radius: 100px;
-            display: flex; gap: 32px; z-index: 100;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-            opacity: 0; animation: fadeInDown 0.8s ease forwards 0.2s;
-        }
-        nav a { 
-            color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; 
-            transition: color 0.2s; 
-        }
-        nav a:hover { color: var(--text-main); }
-
-        /* === 2. 3D Canvas === */
-        #webgl-canvas {
+        /* === Cinematic Noise Overlay === */
+        .noise {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; opacity: 0.6; pointer-events: none;
+            background: url("https://grainy-gradients.vercel.app/noise.svg");
+            opacity: 0.04; pointer-events: none; z-index: 9999;
         }
 
-        /* === 3. Hero Section === */
+        /* === Custom Cursor === */
+        .cursor {
+            position: fixed; width: 10px; height: 10px; background: white;
+            border-radius: 50%; pointer-events: none; z-index: 10000;
+            mix-blend-mode: difference; transition: transform 0.1s;
+        }
+        .cursor-follower {
+            position: fixed; width: 40px; height: 40px; 
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 50%;
+            pointer-events: none; z-index: 9999; transition: transform 0.15s ease-out;
+        }
+
+        /* === 3D Background === */
+        #webgl {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 0.5;
+        }
+
+        /* === Navigation === */
+        nav {
+            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 40px; z-index: 100;
+            background: rgba(10, 10, 10, 0.5); backdrop-filter: blur(10px);
+            padding: 15px 40px; border-radius: 100px; border: 1px solid var(--border);
+        }
+        nav a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: 0.3s; }
+        nav a:hover { color: white; }
+
+        /* === Hero Section === */
         header {
-            height: 90vh; display: flex; flex-direction: column;
+            height: 100vh; display: flex; flex-direction: column;
             justify-content: center; align-items: center; text-align: center;
-            padding: 20px;
+            padding: 0 5%;
         }
 
-        .hero-badge {
-            font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
-            color: var(--accent); border: 1px solid rgba(0, 242, 96, 0.2);
-            padding: 8px 16px; border-radius: 50px; margin-bottom: 24px;
-            background: rgba(0, 242, 96, 0.05);
-            opacity: 0; animation: fadeInUp 0.8s ease forwards 0.4s;
+        .label {
+            font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
+            color: var(--text-muted); margin-bottom: 20px; border: 1px solid var(--border);
+            padding: 10px 20px; border-radius: 50px;
         }
 
         h1 {
-            font-family: 'Space Grotesk', sans-serif; 
-            font-size: clamp(3.5rem, 8vw, 6.5rem);
-            font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 24px;
-            background: linear-gradient(180deg, #ffffff 0%, #777777 100%);
+            font-size: clamp(3.5rem, 10vw, 8rem); font-weight: 800; line-height: 0.95;
+            letter-spacing: -0.04em; margin-bottom: 30px;
+            background: linear-gradient(180deg, #fff 20%, #444 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            opacity: 0; animation: fadeInUp 0.8s ease forwards 0.6s;
-        }
-        
-        p.subtitle {
-            font-size: 1.125rem; color: var(--text-muted); max-width: 540px;
-            margin: 0 auto 40px; font-weight: 300;
-            opacity: 0; animation: fadeInUp 0.8s ease forwards 0.8s;
         }
 
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translate(-50%, -20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        p.bio {
+            font-size: 1.2rem; color: var(--text-muted); max-width: 500px;
+            line-height: 1.6; font-weight: 400;
+        }
 
-        /* === 4. Professional Grid (Spotlight UI) === */
-        .container { max-width: 1200px; margin: 0 auto 120px; padding: 0 24px; }
+        /* === Bento Grid (The Professional Layout) === */
+        .container { max-width: 1400px; margin: 0 auto 150px; padding: 0 40px; }
         
         .section-header { 
-            margin-bottom: 48px; display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid var(--card-border); padding-bottom: 16px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 60px; border-bottom: 1px solid var(--border); padding-bottom: 20px;
         }
-        .section-header h2 { font-family: 'Space Grotesk'; font-size: 1.5rem; color: var(--text-main); }
-        .section-header span { font-size: 0.875rem; color: var(--text-muted); }
+        .section-header h2 { font-size: 3rem; font-weight: 200; letter-spacing: -0.03em; }
 
         .grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
         }
 
-        /* Spotlight Card Logic */
+        /* Card Styles */
         .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            position: relative;
-            height: 280px;
+            background: var(--card-bg); border: 1px solid var(--border);
+            height: 400px; position: relative; overflow: hidden;
             display: flex; flex-direction: column; justify-content: space-between;
-            padding: 32px;
-            text-decoration: none;
-            overflow: hidden;
-            border: 1px solid var(--card-border);
-            transition: transform 0.2s;
-            cursor: pointer;
+            padding: 40px; text-decoration: none; transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            backdrop-filter: blur(20px);
         }
 
-        /* The Moving Glow Border */
-        .card::before {
-            content: "";
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 12px; padding: 1.5px; 
-            background: radial-gradient(
-                800px circle at var(--mouse-x) var(--mouse-y),
-                rgba(255, 255, 255, 0.3), transparent 40%
-            );
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor; mask-composite: exclude;
-            opacity: 0; transition: opacity 0.4s; pointer-events: none;
-        }
+        .card:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-5px); }
 
-        /* Inner Glow on Hover */
-        .card::after {
-            content: ""; position: absolute; inset: 0; border-radius: 12px;
-            background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.03), transparent 40%);
-            opacity: 0; transition: opacity 0.4s; pointer-events: none;
-        }
-
-        .card:hover::before, .card:hover::after { opacity: 1; }
-        .card:hover { transform: translateY(-4px); }
-
-        .card-content h3 { font-family: 'Space Grotesk'; font-size: 1.5rem; color: var(--text-main); margin-bottom: 8px; }
-        .card-content p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+        /* Typography inside cards */
+        .card-num { font-size: 0.9rem; color: var(--text-muted); font-family: monospace; }
+        .card h3 { font-size: 2rem; color: white; font-weight: 400; margin-top: 20px; }
+        .card p { color: var(--text-muted); font-size: 1rem; margin-top: 10px; max-width: 90%; }
         
-        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-        .tech-tag { 
-            font-size: 0.75rem; font-family: 'Space Grotesk'; font-weight: 600; 
-            color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;
+        /* Interactive Arrow */
+        .circle-btn {
+            position: absolute; bottom: 40px; right: 40px;
+            width: 50px; height: 50px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; transition: 0.3s;
         }
-        .arrow { opacity: 0; transform: translateX(-10px); transition: 0.3s; color: var(--text-main); }
-        .card:hover .arrow { opacity: 1; transform: translateX(0); }
+        .card:hover .circle-btn { background: white; color: black; border-color: white; }
 
-        footer {
-            border-top: 1px solid var(--card-border); padding: 60px 24px;
-            text-align: center; color: var(--text-muted); font-size: 0.875rem;
+        /* Special Grid Spans */
+        .span-2 { grid-column: span 2; }
+        
+        @media (max-width: 1000px) { .grid { grid-template-columns: 1fr; } .span-2 { grid-column: auto; } }
+
+        footer { 
+            text-align: center; padding: 80px 0; border-top: 1px solid var(--border);
+            color: var(--text-muted); font-size: 0.9rem; 
         }
     </style>
 </head>
 <body>
 
-    <canvas id="webgl-canvas"></canvas>
+    <div class="noise"></div>
+    <canvas id="webgl"></canvas>
+    
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
 
     <nav>
-        <a href="#">Overview</a>
+        <a href="#">Index</a>
         <a href="#work">Projects</a>
-        <a href="mailto:contact@anas.com">Contact</a>
+        <a href="#">Contact</a>
     </nav>
 
     <header>
-        <div class="hero-badge">Available for Hire</div>
+        <div class="label">Graphics Engineer</div>
         <h1>ANAS ALHAJ</h1>
-        <p class="subtitle">
-            Graphics Engineer & Creative Developer.<br>
-            Specializing in WebGL, Physics Simulations, and High-Performance UI.
+        <p class="bio">
+            Bridging the gap between creative design and high-performance engineering.
+            Specializing in WebGL & Physics.
         </p>
     </header>
 
     <div class="container" id="work">
         <div class="section-header">
             <h2>Selected Works</h2>
-            <span>2024 — 2025</span>
+            <span>(05)</span>
         </div>
 
-        <div class="grid" id="cards-grid">
+        <div class="grid">
             
-            <a href="canvas/index.html" class="card">
-                <div class="card-content">
-                    <h3>Canvas Chaos</h3>
-                    <p>A bespoke particle engine. Features CPU-based gather/scatter algorithms simulating 1000+ entities.</p>
+            <a href="canvas/index.html" class="card span-2">
+                <span class="card-num">/001</span>
+                <div>
+                    <h3>Canvas Chaos Engine</h3>
+                    <p>Proprietary physics system built on CPU. Simulating 1000+ interacting particles with gather/scatter logic.</p>
                 </div>
-                <div class="card-meta">
-                    <span class="tech-tag">Vanilla JS</span>
-                    <span class="arrow">→</span>
-                </div>
+                <div class="circle-btn">↗</div>
             </a>
 
             <a href="threejs/index.html" class="card">
-                <div class="card-content">
-                    <h3>Three.js Architecture</h3>
-                    <p>Immersive 3D environment with PBR materials, dynamic lighting, and orbital controls.</p>
+                <span class="card-num">/002</span>
+                <div>
+                    <h3>3D Spatial Web</h3>
+                    <p>Immersive environments with PBR materials and dynamic lighting.</p>
                 </div>
-                <div class="card-meta">
-                    <span class="tech-tag">WebGL</span>
-                    <span class="arrow">→</span>
-                </div>
+                <div class="circle-btn">↗</div>
             </a>
 
             <a href="matterjs/index.html" class="card">
-                <div class="card-content">
+                <span class="card-num">/003</span>
+                <div>
                     <h3>Rigid Body Sim</h3>
-                    <p>Interactive physics playground utilizing Matter.js for collision detection and gravity.</p>
+                    <p>Interactive simulation featuring gravity, friction, and collision.</p>
                 </div>
-                <div class="card-meta">
-                    <span class="tech-tag">Simulation</span>
-                    <span class="arrow">→</span>
-                </div>
+                <div class="circle-btn">↗</div>
             </a>
 
-            <a href="pixijs/index.html" class="card">
-                <div class="card-content">
-                    <h3>Pixi.js Benchmark</h3>
-                    <p>High-throughput rendering test. Capable of handling thousands of sprite instances at 60 FPS.</p>
+            <a href="pixijs/index.html" class="card span-2">
+                <span class="card-num">/004</span>
+                <div>
+                    <h3>High-Performance Rendering</h3>
+                    <p>Pixi.js benchmark suite. Capable of handling massive sprite counts at locked 60 FPS.</p>
                 </div>
-                <div class="card-meta">
-                    <span class="tech-tag">Performance</span>
-                    <span class="arrow">→</span>
-                </div>
+                <div class="circle-btn">↗</div>
             </a>
 
             <a href="webgl/index.html" class="card">
-                <div class="card-content">
-                    <h3>Shader Lab</h3>
-                    <p>Direct GLSL programming. Generating complex mathematical visuals purely on the GPU.</p>
+                <span class="card-num">/005</span>
+                <div>
+                    <h3>Shader Math</h3>
+                    <p>Native GLSL programming. GPU-accelerated generative art.</p>
                 </div>
-                <div class="card-meta">
-                    <span class="tech-tag">GLSL / Math</span>
-                    <span class="arrow">→</span>
-                </div>
+                <div class="circle-btn">↗</div>
             </a>
 
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2025 Anas Alhaj. Engineered in Jordan.</p>
+        <p>© 2025 Anas Alhaj. Crafted with precision.</p>
     </footer>
 
     <script>
-        // === 1. Professional Spotlight Logic ===
-        const grid = document.getElementById("cards-grid");
-        
-        grid.onmousemove = e => {
-            for(const card of document.getElementsByClassName("card")) {
-                const rect = card.getBoundingClientRect(),
-                      x = e.clientX - rect.left,
-                      y = e.clientY - rect.top;
+        // === Custom Cursor Logic ===
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+        let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
 
-                card.style.setProperty("--mouse-x", `${x}px`);
-                card.style.setProperty("--mouse-y", `${y}px`);
-            }
-        };
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            cursor.style.transform = `translate3d(${mouseX - 5}px, ${mouseY - 5}px, 0)`;
+        });
 
-        // === 2. Three.js Subtle Background (Wireframe Globe) ===
+        function animateCursor() {
+            posX += (mouseX - posX) * 0.1;
+            posY += (mouseY - posY) * 0.1;
+            follower.style.transform = `translate3d(${posX - 20}px, ${posY - 20}px, 0)`;
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // === Three.js Data Globe (The Pro Version) ===
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        
-        const renderer = new THREE.WebGLRenderer({ 
-            canvas: document.getElementById('webgl-canvas'), 
-            alpha: true, 
-            antialias: true 
-        });
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl'), alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
 
-        // Elegant Wireframe Sphere
-        const geometry = new THREE.IcosahedronGeometry(14, 2);
-        const material = new THREE.MeshBasicMaterial({ 
-            color: 0x555555, 
-            wireframe: true, 
-            transparent: true, 
-            opacity: 0.08  // Very subtle opacity for professionalism
-        });
-        const sphere = new THREE.Mesh(geometry, material);
+        // Create a Point Cloud Sphere (Data Globe)
+        const geometry = new THREE.SphereGeometry(15, 64, 64);
+        
+        // Convert to particles
+        const particlesGeo = new THREE.BufferGeometry();
+        const particlesCount = geometry.attributes.position.count;
+        const posArray = new Float32Array(particlesCount * 3);
+        
+        for(let i=0; i<particlesCount * 3; i++) {
+            // Add some noise to make it interesting
+            posArray[i] = geometry.attributes.position.array[i] + (Math.random() - 0.5) * 0.5;
+        }
+        
+        particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const material = new THREE.PointsMaterial({ size: 0.05, color: 0x444444, transparent: true, opacity: 0.8 });
+        const sphere = new THREE.Points(particlesGeo, material);
         scene.add(sphere);
 
-        // Minimalist Floating Particles
-        const particlesGeo = new THREE.BufferGeometry();
-        const count = 150;
-        const posArray = new Float32Array(count * 3);
-        for(let i=0; i<count*3; i++) { posArray[i] = (Math.random()-0.5) * 60; }
-        particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-        
-        const particlesMat = new THREE.PointsMaterial({
-            size: 0.08, 
-            color: 0x888888, 
-            transparent: true, 
-            opacity: 0.4
-        });
-        const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
-        scene.add(particlesMesh);
+        // Add Outer Ring
+        const ringGeo = new THREE.TorusGeometry(22, 0.1, 16, 100);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.3 });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = Math.PI / 2;
+        scene.add(ring);
 
-        camera.position.z = 25;
+        camera.position.z = 35;
 
-        // Smooth Mouse Interaction
-        let mouseX = 0; let mouseY = 0;
+        // Interaction
+        let targetRotationX = 0;
+        let targetRotationY = 0;
+
         document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX / window.innerWidth - 0.5;
-            mouseY = e.clientY / window.innerHeight - 0.5;
+            targetRotationY = (e.clientX / window.innerWidth - 0.5) * 0.5;
+            targetRotationX = (e.clientY / window.innerHeight - 0.5) * 0.5;
         });
 
         function animate() {
             requestAnimationFrame(animate);
             
-            // Slow, deliberate rotation
-            sphere.rotation.y += 0.0008;
-            sphere.rotation.x += 0.0004;
+            // Continuous slow rotation
+            sphere.rotation.y += 0.002;
+            ring.rotation.z -= 0.001;
             
-            // Subtle Parallax
-            sphere.rotation.x += (mouseY * 0.3 - sphere.rotation.x) * 0.05;
-            sphere.rotation.y += (mouseX * 0.3 - sphere.rotation.y) * 0.05;
+            // Mouse Interaction (Smooth Lerp)
+            sphere.rotation.x += 0.05 * (targetRotationX - sphere.rotation.x);
+            sphere.rotation.y += 0.05 * (targetRotationY - sphere.rotation.y);
             
             renderer.render(scene, camera);
         }
